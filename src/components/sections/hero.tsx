@@ -85,7 +85,7 @@ const HeroSection = () => {
                       "cursor-default font-display sm:text-xl md:text-xl whitespace-nowrap bg-clip-text ",
                     )}
                   >
-                    Full Stack Developer
+                    Full Stack Software Engineer
                   </p>
                 </BlurIn>
               </div>
@@ -98,15 +98,15 @@ const HeroSection = () => {
                       5+
                     </span>
                     <span className="text-slate-500 dark:text-zinc-500">
-                      years building software
+                      years experience
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[var(--gold)] font-bold text-lg">
-                      5
+                      3
                     </span>
                     <span className="text-slate-500 dark:text-zinc-500">
-                      portfolio projects
+                      companies
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -127,9 +127,8 @@ const HeroSection = () => {
                     Currently
                   </p>
                   <div className="space-y-1 text-sm font-mono text-slate-600 dark:text-zinc-400">
-                    <p>Building secure systems at Accenture</p>
+                    <p>Building enterprise systems at Accenture</p>
                     <p>Open to global remote roles</p>
-                    <p>Cebu, Philippines · UTC+8</p>
                   </div>
                 </div>
               </BlurIn>
@@ -154,7 +153,7 @@ const HeroSection = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 2.5, duration: 0.5 }}
-                      className="text-xs text-muted-foreground font-mono mt-1 text-center"
+                      className="text-xs text-[#A0A0A0] font-mono mt-1 text-center"
                     >
                       Downloaded {downloadCount} times
                     </motion.p>

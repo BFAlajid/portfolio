@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import SectionWrapper from "../ui/section-wrapper";
 import { SectionHeader } from "./section-header";
 import { Badge } from "../ui/badge";
+import { Award } from "lucide-react";
 
 const CERTIFICATIONS = [
   { name: "Certified Custom Software Engineer", issuer: "micro1", year: "2026" },
@@ -54,11 +55,12 @@ const CertificationsSection = () => {
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
               variants={cardVariants}
-              className="p-6 rounded-lg bg-card border border-border hover:border-[var(--gold)]/30 transition-colors duration-300"
+              className="p-6 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[var(--gold)]/30 transition-colors duration-300"
             >
               <div className="flex flex-col gap-3">
-                <h3 className="font-bold text-foreground">{cert.name}</h3>
-                <p className="text-sm text-muted-foreground">{cert.issuer}</p>
+                <Award className="w-6 h-6 text-[var(--gold)]" />
+                <h3 className="font-bold text-white">{cert.name}</h3>
+                <p className="text-sm text-[#A0A0A0]">{cert.issuer}</p>
                 <Badge
                   variant="secondary"
                   className="w-fit font-mono text-xs border border-[var(--gold)]/20 text-[var(--gold)]"

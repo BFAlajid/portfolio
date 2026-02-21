@@ -1,9 +1,9 @@
 const config = {
   title: "Basil Francis Alajid | Full Stack Developer",
   description: {
-    long: "Full Stack Developer specializing in React, TypeScript, Next.js, and Test Automation. Building production systems at Accenture for Singapore Defence. Open to US remote roles.",
+    long: "Full Stack Software Engineer specializing in React, TypeScript, Next.js, and enterprise systems.",
     short:
-      "Full Stack Developer. React, TypeScript, Next.js, Playwright. Open to US remote roles.",
+      "Full Stack Software Engineer. React, TypeScript, Next.js. Open to global remote roles.",
   },
   keywords: [
     "Basil Francis Alajid",
@@ -11,15 +11,15 @@ const config = {
     "React developer",
     "TypeScript",
     "Next.js",
-    "Playwright",
-    "test automation",
     "software engineer",
     "remote developer",
     "Philippines",
   ],
   author: "Basil Francis Alajid",
   email: "basilfrancis.alajid@yahoo.com",
-  site: "https://basilalajid.dev",
+  phone: "(+63) 976-208-6765",
+  location: "Cebu City, Philippines",
+  site: "https://portfolio-ten-pearl-itp8iqdqjd.vercel.app",
 
   githubUsername: "BFAlajid",
   githubRepo: "portfolio",

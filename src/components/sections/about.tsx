@@ -8,7 +8,7 @@ import { SectionHeader } from "./section-header";
 const INFO_ITEMS = [
   { label: "Location", value: "Cebu, Philippines" },
   { label: "Timezone", value: "UTC+8" },
-  { label: "Status", value: "Open to remote work" },
+  { label: "Status", value: "Open to global remote" },
   { label: "Experience", value: "5+ years" },
 ];
 
@@ -45,7 +45,7 @@ function getRelativeTime(dateStr: string): string {
 }
 
 const GH_CACHE_KEY = "gh-activity";
-const GH_CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+const GH_CACHE_TTL = 15 * 60 * 1000;
 
 function GitHubActivity() {
   const [events, setEvents] = useState<GitHubEvent[]>([]);
@@ -92,7 +92,7 @@ function GitHubActivity() {
       viewport={{ once: true }}
       className="mt-6 p-4 rounded-lg bg-white/[0.03] border border-zinc-800/50"
     >
-      <p className="text-xs font-mono text-muted-foreground mb-3 tracking-wide">
+      <p className="text-xs font-mono text-[#A0A0A0] mb-3 tracking-wide">
         Recent Activity
       </p>
       <div className="space-y-2">
@@ -107,8 +107,8 @@ function GitHubActivity() {
               <span className="text-[var(--gold)] shrink-0 truncate max-w-[140px]">
                 {event.repo.name.split("/")[1]}
               </span>
-              <span className="text-muted-foreground truncate">
-                {commitMsg}
+              <span className="text-[#A0A0A0] truncate">
+                {commitMsg.slice(0, 60)}
               </span>
               <span className="text-zinc-600 shrink-0 ml-auto">
                 {getRelativeTime(event.created_at)}
@@ -140,13 +140,14 @@ const AboutSection = () => {
             viewport={{ once: true, margin: "-50px" }}
             variants={fadeInUp}
           >
-            <div className="p-6 rounded-lg bg-card border border-border hover:border-[var(--gold)]/30 transition-colors duration-300">
-              <p className="text-base text-muted-foreground leading-relaxed">
+            <div className="p-6 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[var(--gold)]/30 transition-colors duration-300">
+              <p className="text-base text-[#A0A0A0] leading-relaxed">
                 Software engineer based in Cebu, Philippines. I build production
-                systems at Accenture for Singapore Defence, automate testing
-                with Playwright, and ship full stack applications with React and
-                TypeScript. 5+ years across enterprise, QA, and freelance
-                consulting. Currently open to global remote roles.
+                systems at Accenture for government clients, automate testing
+                with Playwright, and ship full stack apps with React, TypeScript,
+                and Next.js. 5+ years across enterprise, QA, and freelance.
+                Currently exploring TanStack Query, Framer Motion, and advanced
+                Next.js patterns.
               </p>
               <GitHubActivity />
             </div>
@@ -159,14 +160,14 @@ const AboutSection = () => {
             viewport={{ once: true, margin: "-50px" }}
             variants={fadeInUp}
           >
-            <div className="p-6 rounded-lg bg-card border border-border hover:border-[var(--gold)]/30 transition-colors duration-300 h-full">
+            <div className="p-6 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[var(--gold)]/30 transition-colors duration-300 h-full">
               <div className="grid grid-cols-2 gap-6">
                 {INFO_ITEMS.map((item) => (
                   <div key={item.label}>
-                    <p className="text-xs text-muted-foreground mb-1">
+                    <p className="text-xs text-[#A0A0A0] mb-1">
                       {item.label}
                     </p>
-                    <p className="font-mono text-sm text-foreground">
+                    <p className="font-mono text-sm text-white">
                       {item.value}
                     </p>
                   </div>

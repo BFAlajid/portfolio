@@ -4,28 +4,29 @@
 
 body {
   scroll-behavior: smooth;
+  cursor: none;
 }
 
 @layer base {
   :root {
-    --background: 40 20% 96%;
-    --foreground: 30 10% 10%;
-    --card: 40 15% 98%;
-    --card-foreground: 30 10% 10%;
-    --popover: 40 15% 98%;
-    --popover-foreground: 30 10% 10%;
+    --background: 0 0% 4%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
     --primary: 43 60% 53%;
-    --primary-foreground: 30 10% 10%;
-    --secondary: 40 15% 92%;
-    --secondary-foreground: 30 10% 10%;
-    --muted: 40 15% 92%;
-    --muted-foreground: 30 8% 45%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 63%;
     --accent: 43 60% 53%;
-    --accent-foreground: 30 10% 10%;
+    --accent-foreground: 0 0% 4%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 40 15% 85%;
-    --input: 40 15% 85%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
     --ring: 43 60% 53%;
     --radius: 0.5rem;
     --chart-1: 43 74% 53%;
@@ -41,23 +42,23 @@ body {
 
   .dark {
     --background: 0 0% 4%;
-    --foreground: 40 20% 92%;
-    --card: 0 0% 6%;
-    --card-foreground: 40 20% 92%;
-    --popover: 0 0% 6%;
-    --popover-foreground: 40 20% 92%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
     --primary: 43 60% 53%;
     --primary-foreground: 0 0% 4%;
     --secondary: 0 0% 10%;
-    --secondary-foreground: 40 20% 92%;
+    --secondary-foreground: 0 0% 100%;
     --muted: 0 0% 10%;
-    --muted-foreground: 40 10% 55%;
+    --muted-foreground: 0 0% 63%;
     --accent: 43 60% 53%;
     --accent-foreground: 0 0% 4%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
     --ring: 43 60% 53%;
     --chart-1: 43 70% 50%;
     --chart-2: 30 50% 45%;

@@ -25,8 +25,11 @@ const ContactSection = () => {
           </>
         }
       />
+      <p className="text-center text-[#A0A0A0] font-mono text-sm mb-8 -mt-8">
+        Open to global remote roles. Available UTC+8.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 z-[9999] mx-4">
-        <Card className="min-w-7xl bg-white/70 dark:bg-black/70 backdrop-blur-sm rounded-xl mt-10 md:mt-20 border-[var(--gold)]/10">
+        <Card className="min-w-7xl bg-[#1A1A1A]/70 backdrop-blur-sm rounded-xl mt-10 md:mt-20 border-[#2A2A2A]">
           <CardHeader>
             <CardTitle className="text-4xl">Get In Touch</CardTitle>
             <CardDescription>
