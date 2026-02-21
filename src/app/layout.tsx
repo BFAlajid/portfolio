@@ -57,9 +57,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={[inter.variable, archivoBlack.variable, "font-display"].join(" ")} suppressHydrationWarning>
+    <html lang="en" className={[inter.variable, archivoBlack.variable, "font-display", "dark"].join(" ")} suppressHydrationWarning>
       <head>
         {/* If you are reading this, I probably want to work with you. basilfrancis.alajid@yahoo.com */}
+        <link rel="preload" href="/assets/skills-keyboard.spline" as="fetch" crossOrigin="anonymous" />
         <script dangerouslySetInnerHTML={{ __html: `
           window.addEventListener('error', function(e) {
             if (e.message && (e.message.includes('ChunkLoadError') || e.message.includes('Loading chunk'))) {

@@ -15,8 +15,7 @@ const SectionWrapper = ({ id, className, children, ...props }: SectionWrapperPro
     offset: ["start end", "end start"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.8]);
+  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
 
   return (
     <section
@@ -26,7 +25,7 @@ const SectionWrapper = ({ id, className, children, ...props }: SectionWrapperPro
       {...props}
     >
       <motion.div
-        style={{ opacity, scale }}
+        style={{ opacity, willChange: "opacity" }}
         className="w-full h-full"
       >
         {children}

@@ -376,7 +376,7 @@ const AnimatedBackground = () => {
     if (!isMobile || !isLoading) return;
     const timeout = setTimeout(() => {
       if (isLoading) bypassLoading();
-    }, 6000);
+    }, 3000);
     return () => clearTimeout(timeout);
   }, [isMobile, isLoading]);
 

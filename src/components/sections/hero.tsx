@@ -47,8 +47,7 @@ const HeroSection = () => {
             "pt-28 sm:pb-16 md:p-20 lg:p-24 xl:p-28",
           )}
         >
-          {!isLoading && (
-            <div className="flex flex-col">
+          <div className={cn("flex flex-col transition-opacity duration-500", isLoading ? "opacity-0" : "opacity-100")}>
               <div>
                 <BlurIn delay={0.7}>
                   <p
@@ -207,8 +206,7 @@ const HeroSection = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+          </div>
         </div>
         <div className="grid col-span-1"></div>
       </div>
