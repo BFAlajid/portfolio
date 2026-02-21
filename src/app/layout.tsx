@@ -59,6 +59,13 @@ export default function RootLayout({
     <html lang="en" className={[inter.variable, archivoBlack.variable, "font-display"].join(" ")} suppressHydrationWarning>
       <head>
         {/* If you are reading this, I probably want to work with you. basilfrancis.alajid@yahoo.com */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.addEventListener('error', function(e) {
+            if (e.message && (e.message.includes('ChunkLoadError') || e.message.includes('Loading chunk'))) {
+              window.location.reload();
+            }
+          });
+        `}} />
       </head>
       <body>
         <Providers>

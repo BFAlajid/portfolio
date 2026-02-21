@@ -93,6 +93,9 @@ body {
   .canvas-overlay-mode select,
   .canvas-overlay-mode textarea,
   .canvas-overlay-mode [role="button"],
+  .canvas-overlay-mode div,
+  .canvas-overlay-mode li,
+  .canvas-overlay-mode img,
   .canvas-overlay-mode p,
   .canvas-overlay-mode h1,
   .canvas-overlay-mode h2,
@@ -101,8 +104,22 @@ body {
   .canvas-overlay-mode h5,
   .canvas-overlay-mode h6,
   .canvas-overlay-mode span,
-  .canvas-overlay-mode svg {
+  .canvas-overlay-mode svg,
+  .canvas-overlay-mode canvas {
     pointer-events: auto;
+  }
+
+  /* Allow pointer-events-none to override the whitelist above */
+  .canvas-overlay-mode .pointer-events-none,
+  .canvas-overlay-mode .pointer-events-none * {
+    pointer-events: none !important;
+  }
+
+  /* Re-enable pointer events on interactive elements inside pointer-events-none sections */
+  .canvas-overlay-mode .pointer-events-none a,
+  .canvas-overlay-mode .pointer-events-none button,
+  .canvas-overlay-mode .pointer-events-none [role="button"] {
+    pointer-events: auto !important;
   }
 
   .text-gold {
@@ -123,5 +140,16 @@ body {
 
   .gold-glow {
     text-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

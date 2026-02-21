@@ -29,7 +29,6 @@ const AnimatedBackground = () => {
   const [activeSection, setActiveSection] = useState<Section>("hero");
 
   // Animation controllers refs
-  const bongoAnimationRef = useRef<{ start: () => void; stop: () => void }>();
   const keycapAnimationsRef = useRef<{ start: () => void; stop: () => void }>();
 
   const [keyboardRevealed, setKeyboardRevealed] = useState(false);
@@ -147,39 +146,6 @@ const AnimatedBackground = () => {
     createSectionTimeline("#contact", "contact", "projects", "top 30%");
   };
 
-  const getBongoAnimation = () => {
-    const framesParent = splineApp?.findObjectByName("bongo-cat");
-    const frame1 = splineApp?.findObjectByName("frame-1");
-    const frame2 = splineApp?.findObjectByName("frame-2");
-
-    if (!frame1 || !frame2 || !framesParent) {
-      return { start: () => { }, stop: () => { } };
-    }
-
-    let interval: NodeJS.Timeout;
-    const start = () => {
-      let i = 0;
-      framesParent.visible = true;
-      interval = setInterval(() => {
-        if (i % 2) {
-          frame1.visible = false;
-          frame2.visible = true;
-        } else {
-          frame1.visible = true;
-          frame2.visible = false;
-        }
-        i++;
-      }, 100);
-    };
-    const stop = () => {
-      clearInterval(interval);
-      framesParent.visible = false;
-      frame1.visible = false;
-      frame2.visible = false;
-    };
-    return { start, stop };
-  };
-
   const getKeycapsAnimation = () => {
     if (!splineApp) return { start: () => { }, stop: () => { } };
 
@@ -281,10 +247,8 @@ const AnimatedBackground = () => {
     if (!splineApp) return;
     handleSplineInteractions();
     setupScrollAnimations();
-    bongoAnimationRef.current = getBongoAnimation();
     keycapAnimationsRef.current = getKeycapsAnimation();
     return () => {
-      bongoAnimationRef.current?.stop()
       keycapAnimationsRef.current?.stop()
     }
 
@@ -387,15 +351,6 @@ const AnimatedBackground = () => {
         teardownKeyboard?.pause();
       }
 
-      // Handle Bongo Cat
-      if (activeSection === "projects") {
-        await sleep(300);
-        bongoAnimationRef.current?.start();
-      } else {
-        await sleep(200);
-        bongoAnimationRef.current?.stop();
-      }
-
       // Handle Contact Section Animations
       if (activeSection === "contact") {
         await sleep(600);
@@ -415,6 +370,15 @@ const AnimatedBackground = () => {
       teardownKeyboard?.kill();
     };
   }, [activeSection, splineApp]);
+
+  // Fallback: bypass preloader if Spline takes too long on mobile
+  useEffect(() => {
+    if (!isMobile || !isLoading) return;
+    const timeout = setTimeout(() => {
+      if (isLoading) bypassLoading();
+    }, 6000);
+    return () => clearTimeout(timeout);
+  }, [isMobile, isLoading]);
 
   // Reveal keyboard on load/route change
   useEffect(() => {

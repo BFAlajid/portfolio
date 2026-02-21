@@ -30,7 +30,15 @@ export default function Particles({
   const mousePosition = useMousePosition();
   const mouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
-  const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
+  const isMobileRef = useRef(
+    typeof window !== "undefined" && window.innerWidth < 768
+  );
+  const dpr =
+    typeof window !== "undefined"
+      ? isMobileRef.current
+        ? 1
+        : window.devicePixelRatio
+      : 1;
 
   useEffect(() => {
     if (isBlogPost) return
@@ -172,7 +180,17 @@ export default function Particles({
     return remapped > 0 ? remapped : 0;
   };
 
+  const lastFrameTime = useRef(0);
+  const frameInterval = isMobileRef.current ? 33 : 0; // ~30fps on mobile, uncapped on desktop
+
   const animate = () => {
+    const now = performance.now();
+    if (frameInterval && now - lastFrameTime.current < frameInterval) {
+      window.requestAnimationFrame(animate);
+      return;
+    }
+    lastFrameTime.current = now;
+
     clearContext();
     circles.current.forEach((circle: Circle, i: number) => {
       // Handle the alpha value
@@ -196,12 +214,14 @@ export default function Particles({
       }
       circle.x += circle.dx;
       circle.y += circle.dy;
-      circle.translateX +=
-        (mouse.current.x / (staticity / circle.magnetism) - circle.translateX) /
-        ease;
-      circle.translateY +=
-        (mouse.current.y / (staticity / circle.magnetism) - circle.translateY) /
-        ease;
+      if (!isMobileRef.current) {
+        circle.translateX +=
+          (mouse.current.x / (staticity / circle.magnetism) - circle.translateX) /
+          ease;
+        circle.translateY +=
+          (mouse.current.y / (staticity / circle.magnetism) - circle.translateY) /
+          ease;
+      }
       // circle gets out of the canvas
       if (
         circle.x < -circle.size ||

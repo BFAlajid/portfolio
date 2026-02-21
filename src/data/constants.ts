@@ -251,15 +251,17 @@ export type Experience = {
 export const EXPERIENCE: Experience[] = [
   {
     id: 1,
-    startDate: "Mar 2024",
+    startDate: "Sep 2024",
     endDate: "Present",
-    title: "Custom Software Engineer",
-    company: "Accenture Philippines",
+    title: "Software Engineer (Java and Pega Capabilities)",
+    company: "Accenture",
     description: [
-      "Build and maintain defence systems for Singapore government using Pega and Java.",
-      "Reduced QA cycle time by 40% through Playwright E2E test automation.",
-      "Designed spec-to-defect mapping workflows for backend QA validation.",
-      "Integrated Connect-REST APIs with data page scoping and error handling.",
+      "Contributing to the design and implementation of a secure, large-scale Pega application for a government agency handling internal case management and digital workflow automation.",
+      "Building full case lifecycles, flow actions, and SLA-driven assignments in Pega Infinity 24.1.",
+      "Developing REST integrations using Connect-REST with properly scoped data pages.",
+      "Creating dynamic tables and report definitions with filtering, joining, and summarization logic.",
+      "Designing UI/UX with visibility conditions, reusable sections, and validation rules.",
+      "Building automated test flows using Playwright + CRX to validate rule behavior and form responses.",
     ],
     skills: [
       SkillNames.REACT,
@@ -273,15 +275,15 @@ export const EXPERIENCE: Experience[] = [
   },
   {
     id: 2,
-    startDate: "Jun 2023",
-    endDate: "Mar 2024",
-    title: "Software Developer",
-    company: "Blueberry AI",
+    startDate: "Jul 2023",
+    endDate: "Sep 2023",
+    title: "Quality Assurance Engineer",
+    company: "Blueberry Digital Labs",
     description: [
-      "Built full stack features with React and Node.js for AI-powered products.",
-      "Implemented REST API integrations and client-side state management.",
-      "Collaborated on agile sprints delivering production features on 2-week cycles.",
-      "Wrote technical documentation and contributed to code review processes.",
+      "Performed quality control and assurance by inspecting backend systems, databases, APIs, and server-side components.",
+      "Cross-referenced software backend against guiding memos, flagging inconsistencies as defects.",
+      "Contributed to testing and assessment of new QA tools by providing functional and usability input.",
+      "Resolved QA challenges and streamlined assurance procedures to improve efficiency and output.",
     ],
     skills: [
       SkillNames.REACT,
@@ -292,17 +294,24 @@ export const EXPERIENCE: Experience[] = [
       SkillNames.GIT,
     ],
   },
+  {
+    id: 3,
+    startDate: "May 2019",
+    endDate: "Present",
+    title: "Freelance Software Developer & Technical Consultant",
+    company: "Independent Consultancy",
+    description: [
+      "Developing custom software solutions in Java, Python, and C++ for SMEs and individual clients.",
+      "Designing, configuring, and troubleshooting Cisco network setups for small businesses.",
+      "Delivering web applications, automation scripts, and tools across diverse industries.",
+      "Providing thesis support, technical writing, and ghostwriting services for academic and professional clients.",
+    ],
+    skills: [
+      SkillNames.REACT,
+      SkillNames.JS,
+      SkillNames.TS,
+      SkillNames.GIT,
+      SkillNames.LINUX,
+    ],
+  },
 ];
-
-export const themeDisclaimers = {
-  light: [
-    "Light mode activated. Bold choice.",
-    "Switching to light mode. Your eyes, your call.",
-    "Light mode engaged. Contrast increased.",
-  ],
-  dark: [
-    "Dark mode. Where code belongs.",
-    "Welcome back to the dark side.",
-    "Dark mode activated. As it should be.",
-  ],
-};

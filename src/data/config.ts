@@ -1,12 +1,12 @@
 const config = {
-  title: "Basil Alajid | Full Stack Developer",
+  title: "Basil Francis Alajid | Full Stack Developer",
   description: {
     long: "Full Stack Developer specializing in React, TypeScript, Next.js, and Test Automation. Building production systems at Accenture for Singapore Defence. Open to US remote roles.",
     short:
       "Full Stack Developer. React, TypeScript, Next.js, Playwright. Open to US remote roles.",
   },
   keywords: [
-    "Basil Alajid",
+    "Basil Francis Alajid",
     "full stack developer",
     "React developer",
     "TypeScript",
@@ -17,7 +17,7 @@ const config = {
     "remote developer",
     "Philippines",
   ],
-  author: "Basil Alajid",
+  author: "Basil Francis Alajid",
   email: "basilfrancis.alajid@yahoo.com",
   site: "https://basilalajid.dev",
 
