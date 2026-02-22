@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SectionWrapper from "../ui/section-wrapper";
 import { SectionHeader } from "./section-header";
+import { config } from "@/data/config";
+import { getRelativeTime } from "@/lib/utils";
 
 const INFO_ITEMS = [
   { label: "Location", value: "Cebu, Philippines" },
@@ -30,22 +32,7 @@ interface GitHubEvent {
   created_at: string;
 }
 
-function getRelativeTime(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diff = now - then;
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  const months = Math.floor(days / 30);
-  return `${months}mo ago`;
-}
-
 const GH_CACHE_KEY = "gh-activity";
-const GH_CACHE_TTL = 15 * 60 * 1000;
 
 function GitHubActivity() {
   const [events, setEvents] = useState<GitHubEvent[]>([]);
@@ -55,14 +42,14 @@ function GitHubActivity() {
       const cached = localStorage.getItem(GH_CACHE_KEY);
       if (cached) {
         const { data, ts } = JSON.parse(cached);
-        if (Date.now() - ts < GH_CACHE_TTL) {
+        if (Date.now() - ts < config.cacheTTL) {
           setEvents(data);
           return;
         }
       }
     } catch {}
 
-    fetch("https://api.github.com/users/BFAlajid/events/public")
+    fetch(`https://api.github.com/users/${config.githubUsername}/events/public`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed");
         return res.json();

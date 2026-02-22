@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, CalendarDays, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import RevealAnimation from "@/components/reveal-animations";
+import PageTransition from "@/components/page-transition";
 
 export async function generateStaticParams() {
   const posts = getBlogPosts();
@@ -63,6 +64,7 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
   const post = getBlogPost(params.slug);
 
   return (
+    <PageTransition>
     <div className="min-h-screen relative font-sans">
       <ScrollProgress className="bg-gradient-to-r from-purple-500 to-pink-500" />
 
@@ -109,5 +111,6 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
         </RevealAnimation>
       </div>
     </div>
+    </PageTransition>
   );
 }

@@ -1,0 +1,168 @@
+---
+title: "How I Built a Gen 3 Save Parser in the Browser"
+publishedAt: "2026-02-20"
+summary: "Decrypting Pokemon save files with XOR keys, shuffling sub-structures by PID, and extracting bit-packed IVs from raw binary data — all in JavaScript."
+author: "Basil Francis Alajid"
+tags: ["webdev", "pokemon", "binary", "javascript"]
+image: "/me.jpg"
+---
+
+# Parsing GBA Save Files in JavaScript
+
+The goal was simple: drag a `.sav` file into the browser and have your actual Pokemon show up in the app. Same stats, same moves, same everything. The emulator's SRAM dump is byte-for-byte a Gen 3 save file, so if I could parse that format, I could bridge the emulator and the team builder with zero export steps.
+
+Turns out Game Freak made that format intentionally hostile to read.
+
+## The 80-Byte Block
+
+Every Pokemon in Gen 3 is an 80-byte data structure. The first 32 bytes are an unencrypted header — PID (Personality Value), OTID (Original Trainer ID), nickname, language. Straightforward stuff. The remaining 48 bytes are where it gets adversarial: four 12-byte sub-structures containing the actual data (species, moves, EVs, IVs, experience), encrypted and shuffled.
+
+```
+Bytes 0-3:    PID (Personality Value)
+Bytes 4-7:    OTID (Original Trainer ID)
+Bytes 8-17:   Nickname (10 characters, Gen 3 encoding)
+Bytes 18-19:  Language
+Bytes 20-31:  Other header fields
+Bytes 32-79:  Encrypted data (4 sub-structures x 12 bytes)
+```
+
+The browser gives us `ArrayBuffer` and `DataView` for this, which is all you need. Gen 3 is little-endian throughout, so every read is `view.getUint32(offset, true)`. Get the endianness wrong and every value is garbage.
+
+## The XOR Decryption
+
+The 48 encrypted bytes use a key derived from `PID XOR OTID`. You apply it in 4-byte chunks across the whole region:
+
+```typescript
+function decryptSubstructures(
+  data: DataView,
+  offset: number,
+  pid: number,
+  otid: number
+): ArrayBuffer {
+  const key = (pid ^ otid) >>> 0;
+  const decrypted = new ArrayBuffer(48);
+  const view = new DataView(decrypted);
+
+  for (let i = 0; i < 48; i += 4) {
+    const encrypted = data.getUint32(offset + 32 + i, true);
+    view.setUint32(i, (encrypted ^ key) >>> 0, true);
+  }
+
+  return decrypted;
+}
+```
+
+The `>>> 0` is doing real work here. JavaScript's bitwise operators return signed 32-bit integers, so without the unsigned coercion you get negative values that silently corrupt the XOR output. I lost about two hours to that before reading the spec more carefully.
+
+## Sub-Structure Shuffling
+
+This is the part that made me respect Game Freak's spite. The four sub-structures (Growth, Attacks, EVs, Miscellaneous) aren't in a fixed order. Their order is determined by `PID % 24`, giving one of 24 permutations. They did this specifically to annoy save editors. It works.
+
+I just hardcoded the lookup table:
+
+```typescript
+const SUBSTRUCTURE_ORDER: readonly (readonly number[])[] = [
+  [0, 1, 2, 3], // 0:  G A E M
+  [0, 1, 3, 2], // 1:  G A M E
+  [0, 2, 1, 3], // 2:  G E A M
+  [0, 2, 3, 1], // 3:  G E M A
+  [0, 3, 1, 2], // 4:  G M A E
+  [0, 3, 2, 1], // 5:  G M E A
+  [1, 0, 2, 3], // 6:  A G E M
+  [1, 0, 3, 2], // 7:  A G M E
+  [1, 2, 0, 3], // 8:  A E G M
+  [1, 2, 3, 0], // 9:  A E M G
+  [1, 3, 0, 2], // 10: A M G E
+  [1, 3, 2, 0], // 11: A M E G
+  [2, 0, 1, 3], // 12: E G A M
+  [2, 0, 3, 1], // 13: E G M A
+  [2, 1, 0, 3], // 14: E A G M
+  [2, 1, 3, 0], // 15: E A M G
+  [2, 3, 0, 1], // 16: E M G A
+  [2, 3, 1, 0], // 17: E M A G
+  [3, 0, 1, 2], // 18: M G A E
+  [3, 0, 2, 1], // 19: M G E A
+  [3, 1, 0, 2], // 20: M A G E
+  [3, 1, 2, 0], // 21: M A E G
+  [3, 2, 0, 1], // 22: M E G A
+  [3, 2, 1, 0], // 23: M E A G
+] as const;
+
+function getSubstructure(
+  decrypted: DataView,
+  pid: number,
+  target: number // 0=G, 1=A, 2=E, 3=M
+): DataView {
+  const order = SUBSTRUCTURE_ORDER[pid % 24];
+  const position = order.indexOf(target);
+  const offset = position * 12;
+  return new DataView(decrypted.buffer, offset, 12);
+}
+```
+
+I had a bug where the lookup was backwards — indexing into the target instead of finding the target in the array. Spent an embarrassing amount of time on that. Off-by-one errors have nothing on off-by-direction errors.
+
+## Bit-Packed IVs
+
+IVs are the hidden stats. In Gen 3, all six are packed into a single 32-bit integer in the Miscellaneous sub-structure. Each IV is 5 bits wide (values 0-31):
+
+```
+Bits  0-4:   HP
+Bits  5-9:   Attack
+Bits 10-14:  Defense
+Bits 15-19:  Speed
+Bits 20-24:  Special Attack
+Bits 25-29:  Special Defense
+Bit  30:     Is Egg flag
+Bit  31:     Has Species
+```
+
+Extraction is just shifts and masks:
+
+```typescript
+function extractIVs(miscView: DataView): PokemonIVs {
+  const ivData = miscView.getUint32(4, true);
+
+  return {
+    hp:    (ivData >>  0) & 0x1F,
+    atk:   (ivData >>  5) & 0x1F,
+    def:   (ivData >> 10) & 0x1F,
+    speed: (ivData >> 15) & 0x1F,
+    spa:   (ivData >> 20) & 0x1F,
+    spd:   (ivData >> 25) & 0x1F,
+  };
+}
+```
+
+`& 0x1F` isolates 5 bits. Simple once you know the layout, maddening to debug when you're staring at hex dumps trying to figure out why your Torchic has 31 Speed but the parser says 7.
+
+## The Rest of the Data
+
+Growth sub-structure gives you species ID and held item. EVs are individual bytes (0-255 each). Species IDs use Gen 3's internal ordering which doesn't match the National Pokedex, so there's a mapping table for that.
+
+```typescript
+function readGrowth(growthView: DataView) {
+  return {
+    species: growthView.getUint16(0, true),
+    heldItem: growthView.getUint16(2, true),
+    experience: growthView.getUint32(4, true),
+  };
+}
+
+function readEVs(evView: DataView) {
+  return {
+    hp:    evView.getUint8(0),
+    atk:   evView.getUint8(1),
+    def:   evView.getUint8(2),
+    speed: evView.getUint8(3),
+    spa:   evView.getUint8(4),
+    spd:   evView.getUint8(5),
+  };
+}
+```
+
+## The Full Pipeline
+
+Read the `.sav`, locate party data or iterate PC boxes, decrypt each 80-byte block, unshuffle the sub-structures, extract every field, map internal species ID to national dex number, push into the app's state. The whole thing runs in under 50ms for a full save file.
+
+Game Freak crammed an impressive amount of data into 80 bytes per Pokemon. I have a healthy fear of bit shifting in JavaScript now. But the result — dragging a save file into the browser and watching your team appear, stats correct down to the IV — that made the binary headaches worth it.

@@ -190,6 +190,12 @@ const projects: Project[] = [
             <li>Gen 3 binary save parser: XOR decryption, 24 sub-structure permutations, bit-packed IV extraction</li>
             <li>Zero backend — all persistence via localStorage and IndexedDB</li>
           </ul>
+
+          <Link href="/projects/professor-basils-lab" className="inline-block mt-6">
+            <Button variant="outline" size="sm" className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono">
+              View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       );
     },
@@ -223,6 +229,12 @@ const projects: Project[] = [
           <p className="font-mono mb-2">
             Next.js, TypeScript, Tailwind, Framer Motion
           </p>
+
+          <Link href="/projects/manila-watch-atelier" className="inline-block mt-6">
+            <Button variant="outline" size="sm" className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono">
+              View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       );
     },

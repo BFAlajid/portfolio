@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { GitCommit, GitPullRequest, Star, GitFork, Clock } from "lucide-react";
+import { config } from "@/data/config";
+import { getRelativeTime } from "@/lib/utils";
 
 type RepoStats = {
   totalCommits: number;
@@ -14,23 +16,7 @@ type RepoStats = {
   languages: Record<string, number>;
 };
 
-const CACHE_KEY = "gh_progress_cache";
-const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
-
-function getRelativeTime(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diff = now - then;
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  const months = Math.floor(days / 30);
-  return `${months}mo ago`;
-}
+const getCacheKey = (repo: string) => `gh_progress_${repo.replace("/", "_")}`;
 
 function getLanguageColor(lang: string): string {
   const colors: Record<string, string> = {
@@ -45,8 +31,10 @@ function getLanguageColor(lang: string): string {
 
 export default function GitHubProgressTracker({
   repo = "BFAlajid/professor-basils-lab",
+  repoName,
 }: {
   repo?: string;
+  repoName?: string;
 }) {
   const [stats, setStats] = useState<RepoStats | null>(null);
   const [error, setError] = useState(false);
@@ -55,10 +43,10 @@ export default function GitHubProgressTracker({
     async function fetchStats() {
       try {
         // Check cache
-        const cached = localStorage.getItem(CACHE_KEY);
+        const cached = localStorage.getItem(getCacheKey(repo));
         if (cached) {
           const { data, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < CACHE_TTL) {
+          if (Date.now() - timestamp < config.cacheTTL) {
             setStats(data);
             return;
           }
@@ -83,7 +71,7 @@ export default function GitHubProgressTracker({
           forks: repoData.forks_count ?? 0,
           lastPush: repoData.pushed_at ?? "",
           recentCommits: Array.isArray(commitsData)
-            ? commitsData.map((c: any) => ({
+            ? commitsData.map((c: { commit?: { message?: string; author?: { date?: string } }; sha?: string }) => ({
                 message: c.commit?.message?.split("\n")[0] ?? "",
                 date: c.commit?.author?.date ?? "",
                 sha: c.sha?.slice(0, 7) ?? "",
@@ -93,7 +81,7 @@ export default function GitHubProgressTracker({
         };
 
         localStorage.setItem(
-          CACHE_KEY,
+          getCacheKey(repo),
           JSON.stringify({ data, timestamp: Date.now() })
         );
         setStats(data);
@@ -105,7 +93,36 @@ export default function GitHubProgressTracker({
     fetchStats();
   }, [repo]);
 
-  if (error || !stats) return null;
+  if (error) return null;
+
+  if (!stats) {
+    return (
+      <div className="mt-8 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A]/80 p-6 animate-pulse">
+        <div className="flex items-center justify-between mb-4">
+          <div className="h-4 w-40 bg-[#2A2A2A] rounded" />
+          <div className="h-3 w-24 bg-[#2A2A2A] rounded" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="p-3 rounded-lg bg-[#111]/60 border border-[#2A2A2A]">
+              <div className="h-6 w-8 bg-[#2A2A2A] rounded mb-1" />
+              <div className="h-3 w-16 bg-[#2A2A2A] rounded" />
+            </div>
+          ))}
+        </div>
+        <div className="mb-6">
+          <div className="h-3 w-20 bg-[#2A2A2A] rounded mb-2" />
+          <div className="h-2 w-full bg-[#2A2A2A] rounded-full" />
+        </div>
+        <div className="space-y-2">
+          <div className="h-3 w-20 bg-[#2A2A2A] rounded mb-3" />
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-3 w-full bg-[#2A2A2A] rounded" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const totalBytes = Object.values(stats.languages).reduce((a, b) => a + b, 0);
 
@@ -115,11 +132,12 @@ export default function GitHubProgressTracker({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: 0.2 }}
+      aria-live="polite"
       className="mt-8 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A]/80 p-6"
     >
       <div className="flex items-center justify-between mb-4">
         <h4 className="text-sm font-mono text-gold font-bold tracking-wider uppercase">
-          Live Progress
+          {repoName ? `${repoName} — Live Progress` : "Live Progress"}
         </h4>
         {stats.lastPush && (
           <span className="text-xs font-mono text-muted-foreground flex items-center gap-1">

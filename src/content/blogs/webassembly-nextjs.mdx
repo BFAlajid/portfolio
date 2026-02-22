@@ -1,0 +1,155 @@
+---
+title: "Running a GBA Emulator in Next.js with WebAssembly"
+publishedAt: "2026-02-18"
+summary: "Compiling mGBA to WASM, handling SharedArrayBuffer with COOP/COEP headers, and persisting save states to IndexedDB."
+author: "Basil Francis Alajid"
+tags: ["webassembly", "nextjs", "emulation", "wasm"]
+image: "/me.jpg"
+---
+
+# Embedding mGBA in a Next.js App
+
+So the idea was: you catch a Pokemon in FireRed inside the browser, hit a button, and it shows up in the team builder. Same app. No file exports. The emulator's SRAM is the save file, and I already had a parser for that format.
+
+Getting there meant shoving a C-based GBA emulator into a React app and making them not hate each other.
+
+## mGBA and Emscripten
+
+mGBA already had community Emscripten scripts, so I wasn't compiling from scratch. The output is a ~4-5 MB `.wasm` binary and a JS glue file that bootstraps the module. Both go in `public/emulator/` and get loaded at runtime:
+
+```typescript
+async function initEmulator(canvas: HTMLCanvasElement) {
+  const Module = await (window as any).mGBAModule({
+    canvas,
+    locateFile: (file: string) => `/emulator/${file}`,
+  });
+  return Module;
+}
+```
+
+`locateFile` is necessary because Next.js serves pages from different routes than where the assets live. Without it the loader looks for `mgba.wasm` relative to the current URL and 404s.
+
+## SharedArrayBuffer and the Header Tax
+
+mGBA's threading model needs `SharedArrayBuffer`. Browsers gate that behind COOP/COEP headers:
+
+```
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+No headers, no `SharedArrayBuffer`, and the emulator dies on init with a vague memory allocation error.
+
+The problem is COEP forces every resource on the page to be same-origin or explicitly opt in via `Cross-Origin-Resource-Policy`. That immediately broke CDN fonts, third-party images, analytics scripts. I had two options: proxy everything through API routes, or scope the headers to just the emulator route.
+
+I scoped them:
+
+```typescript
+{
+  source: "/emulator/:path*",
+  headers: [
+    { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+    { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
+  ],
+}
+```
+
+Rest of the app stays unaffected. The emulator page is its own isolated context.
+
+## Turbopack Doesn't Like WASM
+
+During dev, Turbopack kept trying to parse `.wasm` files as JS modules or serving them with the wrong MIME type. The fix was dumb but effective — just fetch the binary manually and hand it to the module initializer:
+
+```typescript
+const wasmBinary = await fetch("/emulator/mgba.wasm")
+  .then((r) => r.arrayBuffer());
+
+const Module = await initMGBA({
+  canvas: canvasRef.current,
+  wasmBinary,
+});
+```
+
+Webpack in production handles `locateFile` fine. This is purely a dev-time workaround.
+
+## The React Wrapper
+
+The emulator renders to a canvas. The component is straightforward — ref the canvas, init the emulator on mount, tear it down on unmount:
+
+```tsx
+const EmulatorScreen: React.FC<{ romUrl: string }> = ({ romUrl }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const moduleRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    let mounted = true;
+
+    (async () => {
+      const rom = await fetch(romUrl).then((r) => r.arrayBuffer());
+      const module = await initEmulator(canvasRef.current!);
+      if (!mounted) return;
+
+      module.loadROM(new Uint8Array(rom));
+      module.start();
+      moduleRef.current = module;
+    })();
+
+    return () => {
+      mounted = false;
+      moduleRef.current?.stop();
+    };
+  }, [romUrl]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={240}
+      height={160}
+      style={{ imageRendering: "pixelated", width: "100%", maxWidth: 720 }}
+    />
+  );
+};
+```
+
+`imageRendering: "pixelated"` is the difference between crisp pixel art and a blurry upscaled mess. The GBA's native resolution is 240x160 — without that property the browser bilinear-filters it when scaling up.
+
+## Save Persistence
+
+Saves go to IndexedDB. It handles binary blobs well, and the API is simple enough with the `idb` wrapper:
+
+```typescript
+export async function saveSRAM(romName: string, sram: ArrayBuffer) {
+  const db = await getDB();
+  await db.put(STORE_NAME, sram, `${romName}:sram`);
+}
+
+export async function loadSRAM(romName: string): Promise<ArrayBuffer | undefined> {
+  const db = await getDB();
+  return db.get(STORE_NAME, `${romName}:sram`);
+}
+```
+
+On startup, check IndexedDB for existing SRAM and load it before the emulator starts executing. On a dirty-save interval, dump it back. Quick save states use the same store with a slot key. Nothing fancy — it just works, and your progress survives tab closes.
+
+## Speed and the Pokemon Import
+
+mGBA exposes `setSpeed()` on the module. I cap it at 4x because above that frames drop and audio falls apart. At 4x the water routes in Emerald go from painful to tolerable.
+
+The import feature is the payoff for all of this. The emulator's SRAM is byte-for-byte identical to a `.sav` file. I read it directly from the running module:
+
+```typescript
+function importFromEmulator(module: any) {
+  const sram = module.getSRAM();
+  const pokemon = parseSaveFile(new DataView(sram.buffer));
+  return pokemon;
+}
+```
+
+`parseSaveFile` is the same Gen 3 parser from the other post. User catches a Ralts, taps "Import," and it's in the team builder. No file dialogs, no exports. The emulator and the app share the same memory.
+
+## The Tradeoff
+
+This whole thing is a collision between two worlds. mGBA expects raw memory access, threading, and a canvas it owns. Next.js expects nice React components and server rendering. Making them coexist meant scoping security headers so they don't poison the rest of the app, bypassing the bundler for binary assets, and wrapping imperative C lifecycle in `useEffect` cleanup.
+
+Every workaround was pragmatic. None of it is elegant. But you can play FireRed in a browser tab and pull Pokemon directly into a battle simulator, and that's the part that matters.

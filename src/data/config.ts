@@ -23,15 +23,13 @@ const config = {
 
   githubUsername: "BFAlajid",
   githubRepo: "portfolio",
+  cacheTTL: 15 * 60 * 1000,
 
   get ogImg() {
     return this.site + "/assets/seo/og-image.png";
   },
   social: {
-    twitter: "",
     linkedin: "https://www.linkedin.com/in/basil-francis-alajid-4a8413179",
-    instagram: "",
-    facebook: "",
     github: "https://github.com/BFAlajid",
   },
 };
