@@ -7,6 +7,7 @@ import { RiNextjsFill, RiReactjsFill } from "react-icons/ri";
 import {
   SiTailwindcss,
   SiTypescript,
+  SiWebassembly,
 } from "react-icons/si";
 import { TbBrandFramerMotion } from "react-icons/tb";
 
@@ -51,25 +52,43 @@ export type Skill = {
 };
 const PROJECT_SKILLS = {
   next: {
+    title: "Next.js 16",
+    bg: "black",
+    fg: "white",
+    icon: <RiNextjsFill />,
+  },
+  nextStable: {
     title: "Next.js",
     bg: "black",
     fg: "white",
     icon: <RiNextjsFill />,
   },
   tailwind: {
+    title: "Tailwind v4",
+    bg: "black",
+    fg: "white",
+    icon: <SiTailwindcss />,
+  },
+  tailwindStable: {
     title: "Tailwind",
     bg: "black",
     fg: "white",
     icon: <SiTailwindcss />,
   },
   ts: {
+    title: "TypeScript 5",
+    bg: "black",
+    fg: "white",
+    icon: <SiTypescript />,
+  },
+  tsStable: {
     title: "TypeScript",
     bg: "black",
     fg: "white",
     icon: <SiTypescript />,
   },
   react: {
-    title: "React.js",
+    title: "React 19",
     bg: "black",
     fg: "white",
     icon: <RiReactjsFill />,
@@ -80,11 +99,11 @@ const PROJECT_SKILLS = {
     fg: "white",
     icon: <TbBrandFramerMotion />,
   },
-  recharts: {
-    title: "Recharts",
+  wasm: {
+    title: "WebAssembly",
     bg: "black",
     fg: "white",
-    icon: <span>📊</span>,
+    icon: <SiWebassembly />,
   },
   tanstackQuery: {
     title: "TanStack Query",
@@ -97,6 +116,12 @@ const PROJECT_SKILLS = {
     bg: "black",
     fg: "white",
     icon: <span>🎮</span>,
+  },
+  indexeddb: {
+    title: "IndexedDB",
+    bg: "black",
+    fg: "white",
+    icon: <span>🗄️</span>,
   },
 };
 export type Project = {
@@ -112,39 +137,59 @@ export type Project = {
 };
 const projects: Project[] = [
   {
-    id: "pokemon-team-builder",
-    category: "Web App",
-    title: "Pokemon Team Builder",
-    src: "/assets/projects-screenshots/pokemon-team-builder/landing.svg",
+    id: "professor-basils-lab",
+    category: "Full-Stack Web App",
+    title: "Professor Basil's Lab",
+    src: "/assets/projects-screenshots/professor-basils-lab/landing.png",
     screenshots: ["landing.png"],
     skills: {
       frontend: [
         PROJECT_SKILLS.next,
+        PROJECT_SKILLS.react,
         PROJECT_SKILLS.ts,
-        PROJECT_SKILLS.tanstackQuery,
         PROJECT_SKILLS.tailwind,
-        PROJECT_SKILLS.recharts,
         PROJECT_SKILLS.framerMotion,
+        PROJECT_SKILLS.tanstackQuery,
+        PROJECT_SKILLS.wasm,
         PROJECT_SKILLS.pokeapi,
+        PROJECT_SKILLS.indexeddb,
       ],
       backend: [],
     },
     live: "",
-    github: "https://github.com/BFAlajid/pokemon-team-builder",
+    github: "https://github.com/BFAlajid/professor-basils-lab",
     get content() {
       return (
         <div>
           <TypographyP className="font-mono">
-            Team composition tool with type coverage analysis, stat radar charts,
-            and battle damage calculations. Uses PokeAPI for real-time Pokemon
-            data with TanStack Query caching.
+            An entirely client-side Pokemon platform featuring a team builder,
+            turn-based battle simulator, wild encounter system, and a GBA
+            emulator powered by mGBA compiled to WebAssembly.
           </TypographyP>
           <ProjectsLinks live={this.live} repo={this.github} />
+
+          <TypographyH3 className="my-4 mt-8">Core Features</TypographyH3>
+          <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
+            <li>Full National Pokedex (1025 Pokemon) with EV/IV/nature/ability/item/move customization</li>
+            <li>Battle engine using Gen V+ damage formula with Mega Evolution, Terastallization, and Dynamax</li>
+            <li>Wild encounters with real catch formula, 14 ball types, and shiny odds (1/4096)</li>
+            <li>Embedded GBA emulator (mGBA → WASM) with save states, speed controls, and Gen 3 save import</li>
+            <li>Type coverage matrix, stat radar chart, damage calculator, and team weakness analysis</li>
+            <li>Pokemon Showdown format import/export and URL team sharing</li>
+          </ul>
+
           <TypographyH3 className="my-4 mt-8">Tech Stack</TypographyH3>
           <p className="font-mono mb-2">
-            Next.js, TypeScript, TanStack Query, Tailwind, Recharts, Framer
-            Motion, PokeAPI
+            Next.js 16, React 19, TypeScript 5, Tailwind v4, Framer Motion,
+            TanStack Query, WebAssembly, IndexedDB, PokeAPI
           </p>
+
+          <TypographyH3 className="my-4 mt-8">Engineering Highlights</TypographyH3>
+          <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
+            <li>Battle engine built as a pure useReducer state machine (deterministic, replay-capable)</li>
+            <li>Gen 3 binary save parser: XOR decryption, 24 sub-structure permutations, bit-packed IV extraction</li>
+            <li>Zero backend — all persistence via localStorage and IndexedDB</li>
+          </ul>
         </div>
       );
     },
@@ -153,13 +198,13 @@ const projects: Project[] = [
     id: "manila-watch-atelier",
     category: "E-Commerce",
     title: "Manila Watch Atelier",
-    src: "/assets/projects-screenshots/manila-watch-atelier/landing.svg",
+    src: "/assets/projects-screenshots/manila-watch-atelier/landing.png",
     screenshots: ["landing.png"],
     skills: {
       frontend: [
-        PROJECT_SKILLS.next,
-        PROJECT_SKILLS.ts,
-        PROJECT_SKILLS.tailwind,
+        PROJECT_SKILLS.nextStable,
+        PROJECT_SKILLS.tsStable,
+        PROJECT_SKILLS.tailwindStable,
         PROJECT_SKILLS.framerMotion,
       ],
       backend: [],
