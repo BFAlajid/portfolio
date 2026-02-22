@@ -1,4 +1,4 @@
-# Basil Alajid | Portfolio
+# Basil Francis Alajid | Portfolio
 
 Full Stack Developer portfolio built with Next.js 14, TypeScript, GSAP, Framer Motion, and Spline 3D.
 
@@ -35,6 +35,7 @@ Open http://localhost:3000
 ## Customize
 
 All personal data is in 3 files:
+
 - `src/data/config.ts` (name, email, social links)
 - `src/data/constants.ts` (skills, experience)
 - `src/data/projects.tsx` (portfolio projects)

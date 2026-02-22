@@ -1,29 +1,60 @@
 ---
-title: "Achieving Milestone: Adding Blogs Section"
-publishedAt: "2024-05-27"
-summary: "A humorous take on the monumental task of adding a blog section to my portfolio."
-author: "Naresh Khatri"
-tags: ["milestone", "humor", "portfolio"]
+title: "Building This Portfolio"
+publishedAt: "2026-02-10"
+summary: "A 3D keyboard, GSAP scroll animations, ambient Pokemon music, and the decisions behind over-engineering a personal site."
+author: "Basil Francis Alajid"
+tags: ["nextjs", "portfolio", "3d", "gsap"]
+image: "/me.jpg"
 ---
 
-# Achieving Milestone: Adding Blogs Section
+# Why This Portfolio Is Like This
 
-Finally! The day has come. The stars have aligned, the code has compiled, and I have successfully added a blog section to my portfolio. It's a small step for a developer, but a giant leap for my procrastination.
+Every developer portfolio is a statement about what you care about. Most of them say "I know Tailwind and can center a div." I wanted mine to say something different.
 
-## The Journey
+This site is a Next.js 14 app with a 3D interactive keyboard built in Spline, GSAP-driven scroll animations, Framer Motion page transitions, ambient Pokemon soundtrack, particle effects, a command palette, keyboard shortcuts, and a custom crosshair cursor. It is objectively over-engineered for a portfolio. That was the point.
 
-It started with a simple thought: "I should have a blog." That thought was immediately followed by a year of overthinking the design, 3 months of debating between a CMS and Markdown, and 2 weeks of actually writing code.
+## The 3D Keyboard
 
-### Why Space Theme?
+The skills section has an interactive 3D keyboard model loaded via `@splinetool/react-spline`. Each keycap maps to a technology I work with. The model is preloaded in the document head to avoid the visual pop-in:
 
-Because why not? If I'm going to write about code, I might as well do it while floating in the void of the internet. Plus, dark mode is default in space.
+```html
+<link rel="preload" href="/assets/skills-keyboard.spline" as="fetch" crossOrigin="anonymous" />
+```
 
-## What to Expect?
+The keyboard also has sound. Click a key and you hear a mechanical keypress. The `useSounds` hook manages an `AudioContext` and plays samples from `/assets/keycap-sounds/`. It's completely unnecessary and I love it.
 
-- **Tech Rants**: Opinions on frameworks I barely use.
-- **Tutorials**: How to center a div (spoiler: use flexbox).
-- **Life Updates**: Mostly about how much coffee I consumed.
+## Scroll Animations
 
-## Conclusion
+Lenis handles smooth scrolling. GSAP handles the scroll-triggered animations — section headers that slide in, text that fades up, elements that parallax. Framer Motion handles component-level animations like hover states and page transitions.
 
-Stay tuned for more content. Or don't. I'm just happy this page renders without errors. 🚀
+Using both GSAP and Framer Motion sounds redundant, but they solve different problems. GSAP is better for scroll-driven orchestration where you need precise timeline control. Framer Motion is better for declarative component animations that tie into React's lifecycle. Trying to do everything in one or the other would have been messier.
+
+## The Music
+
+There's ambient background music. 24 curated tracks from the Pokemon Ruby/Sapphire/Emerald soundtrack, shuffled on each visit, auto-playing after the first user interaction. FLAC format because I'm not compressing Littleroot Town to 128kbps MP3.
+
+It plays at 30% volume. There's no mute button. This is my portfolio and Dewford Town deserves to be heard.
+
+Safari doesn't support FLAC, so the hook checks `canPlayType("audio/flac")` and silently does nothing if it fails. Safari users get silence, which is its own kind of statement.
+
+## The Command Palette
+
+`Ctrl+K` opens a command palette. It lets you jump to any section, open external links, and navigate the site without scrolling. The keyboard shortcuts overlay shows all available bindings.
+
+## The Animated Background
+
+The background is a custom particle system rendered on canvas. Particle count adapts to viewport size — 80 on desktop, 40 on mobile. The crosshair cursor replaces the default pointer on desktop. Both are disabled on mobile because touch devices don't have hover states and particles eat battery.
+
+## Config-Driven Everything
+
+All personal data lives in three files: `config.ts` (name, email, socials), `constants.ts` (skills, experience), and `projects.tsx` (portfolio projects). Everything else reads from these. Change your name in one place, it updates everywhere. GitHub stats, activity feeds, and the progress tracker all pull from `config.githubUsername`.
+
+## The Color Scheme
+
+Dark background (#0A0A0A) with gold (#C9A84C) accents. Luxury watch aesthetic. The gold has three variants — light for hover states, dim for borders, muted for backgrounds. It reads as premium without being gaudy. Every accent color in the site is a shade of gold.
+
+## The Tradeoff
+
+This portfolio took longer than most production apps I've shipped. A simpler site would have been perfectly fine for job applications. But I wanted a playground — somewhere to use 3D models, scroll animations, ambient audio, binary parsers, and WebAssembly emulators in the same codebase without a product manager asking why.
+
+The result is a portfolio that's fun to browse, technically interesting to dig into, and demonstrates that I build things because I think they're cool, not just because a ticket told me to.

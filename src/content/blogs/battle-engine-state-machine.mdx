@@ -7,31 +7,25 @@ tags: ["react", "typescript", "gamedev", "state-machine"]
 image: "/me.jpg"
 ---
 
-# Building a Pokemon Battle Engine with useReducer
+# A Battle Engine on useReducer
 
-The battle simulator in **Professor Basil's Lab** is the feature that took the longest to build and the one I'm most proud of. It supports singles battles with full damage calculation, type effectiveness, abilities, held items, weather, stat stages, status conditions, Mega Evolution, Terastallization, and Dynamax. And the entire thing runs on React's `useReducer`.
+The battle simulator took the longest to build out of everything in the app. Full singles with the Gen V+ damage formula, type effectiveness, abilities, held items, weather, terrain, stat stages, status conditions, Mega Evolution, Terastallization, and Dynamax. And the whole thing is a `useReducer`.
 
-This post breaks down the architecture: why I chose `useReducer` over more obvious state management options, how the battle state is shaped, the damage formula, and how the AI opponent makes decisions.
+That sounds like a weird choice for a game engine. It is. But it's also the right one for this specific problem.
 
-## Why useReducer?
+## Why useReducer Works Here
 
-When most people think of game state, they think of mutable objects and imperative update loops. And that works fine for games rendered on a canvas at 60fps. But the battle simulator in Professor Basil's Lab is a turn-based system rendered with React components. The UI updates when state changes. That's exactly what React is built for.
+The battle simulator isn't a 60fps canvas game. It's turn-based, rendered with React components. The UI updates when state changes. That's literally what React does.
 
-`useReducer` is a natural fit for three reasons:
-
-**Pure functions.** The reducer takes the current state and an action, and returns the next state. No side effects, no mutation. Every state transition is a pure function of its inputs. This makes the logic easy to test — pass in a state and an action, assert on the output.
-
-**Determinism.** Given the same initial state, the same sequence of actions, and the same RNG seed, the reducer will always produce the same sequence of states. This is essential for replays. I can record just the actions and the initial seed, then replay the entire battle by feeding them back through the reducer.
-
-**React integration.** There's no syncing layer, no subscription boilerplate. `useReducer` gives me `[state, dispatch]`, and every component in the battle UI can read from state and dispatch actions directly. The battle log, the HP bars, the move selection menu — they all derive from the same state object.
+`useReducer` gives me three things for free. Pure functions — the reducer takes current state and an action, returns next state. No side effects, no mutation. Every transition is testable: pass in state, pass in action, assert on output. Determinism — same initial state, same action sequence, same RNG seed, same result every time. This is what makes replays possible: just record the actions and the seed. And React integration — no sync layer, no subscriptions. Every component reads from `battleState` and dispatches actions directly.
 
 ```typescript
 const [battleState, dispatch] = useReducer(battleReducer, initialState);
 ```
 
-## The Battle State Shape
+## The State Shape
 
-The core state object captures everything needed to determine the outcome of any action:
+Everything the engine needs to resolve any action lives in one object:
 
 ```typescript
 interface BattleState {
@@ -67,23 +61,13 @@ interface BattlePokemon {
   isDynamaxed: boolean;
   dynamaxTurns: number;
 }
-
-interface StatStages {
-  atk: number;  // -6 to +6
-  def: number;
-  spa: number;
-  spd: number;
-  speed: number;
-  accuracy: number;
-  evasion: number;
-}
 ```
 
-The `statStages` object tracks in-battle modifiers. A +1 stage in Attack means a 1.5x multiplier; +2 means 2x, following the standard `(2 + stage) / 2` formula for positive stages and `2 / (2 + |stage|)` for negative stages.
+Stat stages range from -6 to +6. The modifier formula is `(2 + stage) / 2` for positive, `2 / (2 + |stage|)` for negative. Standard stuff if you know competitive Pokemon.
 
-## Action Types
+## Actions as a Discriminated Union
 
-Every possible turn action is modeled as a discriminated union:
+Every possible turn action:
 
 ```typescript
 type BattleAction =
@@ -97,11 +81,11 @@ type BattleAction =
   | { type: "END_TURN" };
 ```
 
-The `MEGA_EVOLVE`, `TERASTALLIZE`, and `DYNAMAX` actions combine a transformation with an attack. In the games, you choose to Mega Evolve and then select a move — the transformation happens at the start of the turn before the move executes. The reducer handles this by first applying the transformation, then processing the move.
+Mega, Tera, and Dynamax combine a transformation with an attack. The reducer applies the transformation first, then processes the move. That matches how the actual games handle it — you choose to Mega Evolve, then pick a move, and the evolution resolves at the start of the turn before the move executes.
 
 ## The Damage Formula
 
-I implemented the Gen V and onward damage formula, which has been stable since Black and White. The core calculation is:
+I implemented the Gen V+ formula. The core calculation has nested `Math.floor` calls that matter — the games truncate at specific points, and getting the rounding wrong by even one point cascades into incorrect damage ranges:
 
 ```typescript
 function calculateDamage(
@@ -122,25 +106,23 @@ function calculateDamage(
     ? getEffectiveStat(defender, "def")
     : getEffectiveStat(defender, "spd");
 
-  // Core formula: ((2 * Level / 5 + 2) * Power * Atk / Def) / 50 + 2
+  // ((2 * Level / 5 + 2) * Power * Atk / Def) / 50 + 2
   let damage = Math.floor(
     (Math.floor(
       (Math.floor(2 * level / 5 + 2) * power * atkStat) / defStat
     )) / 50 + 2
   );
 
-  // Apply modifiers
   damage = applyModifiers(damage, attacker, defender, move, state, rng);
-
   return Math.max(1, damage);
 }
 ```
 
-The nested `Math.floor` calls matter. The games apply integer truncation at specific points in the formula, and getting the rounding wrong by even one point cascades into incorrect damage ranges. I verified my implementation against online damage calculators for dozens of edge cases.
+I verified this against online damage calculators for dozens of edge cases. The nested floors are not optional.
 
-## Modifiers: STAB, Type Effectiveness, Crits, and Weather
+## Modifiers Chain
 
-The `applyModifiers` function chains together every modifier that affects the final damage:
+STAB, type effectiveness, crits, weather, items, burn — they all chain together as multipliers on the base damage:
 
 ```typescript
 function applyModifiers(
@@ -157,12 +139,10 @@ function applyModifiers(
   const roll = Math.floor(rng() * 16) + 85;
   damage = Math.floor((damage * roll) / 100);
 
-  // STAB (Same Type Attack Bonus)
+  // STAB
   const hasStab = attacker.types.includes(move.type) ||
     (attacker.isTerastallized && attacker.teraType === move.type);
-  if (hasStab) {
-    damage = Math.floor(damage * 1.5);
-  }
+  if (hasStab) damage = Math.floor(damage * 1.5);
 
   // Adaptability doubles STAB to 2x
   if (hasStab && attacker.ability === "Adaptability") {
@@ -177,31 +157,20 @@ function applyModifiers(
   const critRoll = rng();
   const critStage = getCritStage(attacker, move);
   const critThresholds = [1 / 24, 1 / 8, 1 / 2, 1];
-  const isCrit = critRoll < critThresholds[Math.min(critStage, 3)];
-  if (isCrit) {
+  if (critRoll < critThresholds[Math.min(critStage, 3)]) {
     damage = Math.floor(damage * 1.5);
   }
 
   // Weather
-  if (state.weather === "sun" && move.type === "fire") {
-    damage = Math.floor(damage * 1.5);
-  } else if (state.weather === "sun" && move.type === "water") {
-    damage = Math.floor(damage * 0.5);
-  } else if (state.weather === "rain" && move.type === "water") {
-    damage = Math.floor(damage * 1.5);
-  } else if (state.weather === "rain" && move.type === "fire") {
-    damage = Math.floor(damage * 0.5);
-  }
+  if (state.weather === "sun" && move.type === "fire") damage = Math.floor(damage * 1.5);
+  else if (state.weather === "sun" && move.type === "water") damage = Math.floor(damage * 0.5);
+  else if (state.weather === "rain" && move.type === "water") damage = Math.floor(damage * 1.5);
+  else if (state.weather === "rain" && move.type === "fire") damage = Math.floor(damage * 0.5);
 
-  // Held item modifiers
   damage = applyItemModifier(damage, attacker, move);
 
   // Burn halves physical damage (unless Guts)
-  if (
-    attacker.status === "burn" &&
-    move.category === "physical" &&
-    attacker.ability !== "Guts"
-  ) {
+  if (attacker.status === "burn" && move.category === "physical" && attacker.ability !== "Guts") {
     damage = Math.floor(damage * 0.5);
   }
 
@@ -209,29 +178,11 @@ function applyModifiers(
 }
 ```
 
-Type effectiveness is a lookup in a 18x18 matrix (18 types in the modern games). I store it as a flat map for readability:
+Type effectiveness is an 18x18 lookup. Dual types multiply — Water vs Rock/Ground is 2 x 2 = 4x. Immunities override everything. I store it as a flat map because the 2D array version was unreadable.
 
-```typescript
-const TYPE_CHART: Record<string, Record<string, number>> = {
-  fire: { grass: 2, water: 0.5, fire: 0.5, ice: 2, bug: 2, steel: 2, rock: 0.5, dragon: 0.5 },
-  water: { fire: 2, water: 0.5, grass: 0.5, ground: 2, rock: 2, dragon: 0.5 },
-  // ... all 18 types
-};
+## Seedable RNG
 
-function getTypeEffectiveness(moveType: Type, defenderTypes: Type[]): number {
-  let multiplier = 1;
-  for (const defType of defenderTypes) {
-    multiplier *= TYPE_CHART[moveType]?.[defType] ?? 1;
-  }
-  return multiplier;
-}
-```
-
-Dual-type Pokemon multiply the effectiveness against each type. A Water move against a Rock/Ground type does 2 x 2 = 4x damage. An Electric move against a Water/Flying type also does 4x. Getting these stacked multipliers right is one of those things that seems simple but has a surprising number of edge cases (immunities override everything, for example).
-
-## Deterministic RNG
-
-For replays and testing, I need the RNG to be seedable and deterministic. I use a simple mulberry32 implementation:
+For deterministic replays, the RNG has to be seedable. I use mulberry32:
 
 ```typescript
 function createRNG(seed: number): () => number {
@@ -246,63 +197,55 @@ function createRNG(seed: number): () => number {
 }
 ```
 
-Every call to `rng()` returns a float between 0 and 1, and the sequence is fully determined by the initial seed. The battle reducer creates the RNG from the seed in the initial state, and every random decision (damage roll, critical hit check, accuracy check, secondary effect chance) consumes the next value from the sequence.
+Every random decision — damage roll, crit check, accuracy, secondary effects — consumes the next value from the sequence. Record the seed and the actions, replay the entire battle identically.
 
-## The AI Opponent: Minimax-Lite
+## The AI
 
-For single-player battles, the opponent needs to make reasonable decisions. I didn't want a full minimax search — the branching factor in Pokemon is huge when you consider four moves, switching, items, and all the random outcomes. Instead, I use what I call a "minimax-lite" evaluation: the AI looks one turn ahead, scores each possible action, and picks the best one.
+Full minimax is impractical here — the branching factor with four moves, switches, items, and random outcomes is massive. So the AI does a one-turn lookahead: simulate each legal action through the reducer, score the resulting state, pick the highest.
 
 ```typescript
-function evaluateAction(
-  action: BattleAction,
-  state: BattleState
-): number {
+function evaluateAction(action: BattleAction, state: BattleState): number {
   const simulated = battleReducer(state, action);
   let score = 0;
 
-  // Prefer KOs
   if (simulated.player.currentHp <= 0) score += 1000;
 
-  // Score based on damage dealt
   const damageDealt = state.player.currentHp - simulated.player.currentHp;
   score += damageDealt;
 
-  // Penalize taking damage on a predicted switch-in
   const damageTaken = state.opponent.currentHp - simulated.opponent.currentHp;
   score -= damageTaken * 0.8;
 
-  // Bonus for super-effective moves
   if (action.type === "ATTACK") {
     const move = state.opponent.moves[action.moveIndex];
     const eff = getTypeEffectiveness(move.type, state.player.types);
     if (eff > 1) score += 50;
   }
 
-  // Bonus for setting up weather if it benefits the team
   score += evaluateWeatherBenefit(simulated, "opponent");
-
   return score;
 }
 ```
 
-The AI simulates each legal action through the reducer (with a fixed RNG seed so the evaluation is consistent), scores the resulting state, and picks the highest-scoring option. Because the reducer is a pure function, simulating outcomes is just a function call with no side effects. This is one of the biggest wins of the `useReducer` architecture — the same reducer that drives the real battle also powers the AI's lookahead.
+This is the biggest win of the `useReducer` architecture. The same reducer that drives the real battle also powers the AI's lookahead. Because it's a pure function, simulating outcomes is just a function call. No side effects, no cleanup.
 
-The AI isn't going to win any competitive tournaments, but it makes sensible choices. It picks super-effective moves, switches when it's at a type disadvantage, and goes for the KO when it can. For a web app battle simulator, that's exactly the right level.
+The AI picks super-effective moves, switches on type disadvantage, goes for KOs when it can. It's not going to win on Smogon, but for a web app it makes sensible decisions.
 
-## Putting It All Together
+## Turn Flow
 
-The battle flow works like this: the player selects an action (move, switch, item, or transformation plus move), the AI selects its action, and both are dispatched as a pair. The reducer determines turn order based on move priority and Speed stats (with Trick Room inversion if active), executes the faster action first, checks for fainting, executes the second action, applies end-of-turn effects (weather damage, poison, Leftovers recovery, terrain countdown), and advances the turn counter.
+Player selects an action. AI selects its action. Both dispatch. The reducer determines turn order from priority and Speed (with Trick Room inversion if active), executes the faster action, checks fainting, executes the second, applies end-of-turn effects (weather damage, poison, Leftovers, terrain countdown), advances the turn counter.
 
 ```typescript
-function processTurn(state: BattleState, playerAction: BattleAction, opponentAction: BattleAction): BattleState {
+function processTurn(
+  state: BattleState,
+  playerAction: BattleAction,
+  opponentAction: BattleAction
+): BattleState {
   let next = { ...state, phase: "EXECUTING" as const };
-
   const [first, second] = determineTurnOrder(next, playerAction, opponentAction);
 
   next = executeAction(next, first);
-  if (!isBattleOver(next)) {
-    next = executeAction(next, second);
-  }
+  if (!isBattleOver(next)) next = executeAction(next, second);
 
   next = applyEndOfTurnEffects(next);
   next = { ...next, phase: "TURN_END" as const, turnNumber: next.turnNumber + 1 };
@@ -315,6 +258,6 @@ function processTurn(state: BattleState, playerAction: BattleAction, opponentAct
 }
 ```
 
-Every step is a transformation of the state object. No mutation, no hidden state, no callbacks firing at unexpected times. The React components just render whatever `battleState` contains, and the battle log is an append-only array of entries that tells the story of the fight.
+Every step is a state transformation. No mutation, no hidden state, no callbacks firing at unexpected times. The battle log is an append-only array that tells the story of the fight. Components just render whatever `battleState` contains.
 
-Building a battle engine this way felt unusual at first. Game engines aren't usually built on React hooks. But for a turn-based system where the UI is the primary interface, `useReducer` turned out to be an almost perfect abstraction. It gave me purity, testability, replay capability, and seamless React integration — all from a hook that ships with the framework.
+Building a game engine on `useReducer` felt wrong at first. Game engines aren't usually React hooks. But for a turn-based system where the UI is the primary interface, it turned out to be almost perfect. Purity, testability, replays, and React integration — all from a hook that ships with the framework.

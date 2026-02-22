@@ -7,28 +7,15 @@ tags: ["webassembly", "nextjs", "emulation", "wasm"]
 image: "/me.jpg"
 ---
 
-# Running a GBA Emulator in Next.js with WebAssembly
+# Embedding mGBA in a Next.js App
 
-When I set out to build **Professor Basil's Lab**, one of the wildest features I had in mind was embedding a fully functional Game Boy Advance emulator directly in the web app. Not a link to an external site. Not an iframe hack. A real emulator, running in the same Next.js application where you build teams and run battles. The kind of thing where you catch a Pokemon in FireRed and then pull it into the battle simulator.
+So the idea was: you catch a Pokemon in FireRed inside the browser, hit a button, and it shows up in the team builder. Same app. No file exports. The emulator's SRAM is the save file, and I already had a parser for that format.
 
-This post covers how I got mGBA compiled to WebAssembly, embedded it in a Next.js page, fought through header requirements and bundler issues, and wired up save state persistence so your progress survives a page refresh.
+Getting there meant shoving a C-based GBA emulator into a React app and making them not hate each other.
 
-## Why mGBA?
+## mGBA and Emscripten
 
-There are several GBA emulators out there, but mGBA stands out for a few reasons. It has excellent accuracy, active maintenance, and — critically — an existing Emscripten build target. Emscripten compiles C/C++ to WebAssembly and provides a compatibility layer that bridges system calls (file I/O, threading, graphics) to browser APIs. The mGBA project already had community-maintained scripts for producing a `.wasm` binary and its JavaScript glue code. I didn't have to start from zero, but I had plenty of work ahead of me to integrate it into a modern React application.
-
-## Serving WASM Files from Next.js
-
-The compiled output consists of a `.wasm` binary (around 4-5 MB) and a `.js` loader file that initializes the module. In Next.js, static assets go in the `public/` directory, so I dropped both files there:
-
-```
-public/
-  emulator/
-    mgba.wasm
-    mgba.js
-```
-
-Loading the emulator happens at runtime. I dynamically import the JavaScript glue and point it at the WASM binary:
+mGBA already had community Emscripten scripts, so I wasn't compiling from scratch. The output is a ~4-5 MB `.wasm` binary and a JS glue file that bootstraps the module. Both go in `public/emulator/` and get loaded at runtime:
 
 ```typescript
 async function initEmulator(canvas: HTMLCanvasElement) {
@@ -36,54 +23,26 @@ async function initEmulator(canvas: HTMLCanvasElement) {
     canvas,
     locateFile: (file: string) => `/emulator/${file}`,
   });
-
   return Module;
 }
 ```
 
-The `locateFile` callback tells the loader where to fetch the `.wasm` binary from. Without it, the loader assumes the WASM file is in the same directory as the script, which doesn't work when Next.js serves the page from a different route.
+`locateFile` is necessary because Next.js serves pages from different routes than where the assets live. Without it the loader looks for `mgba.wasm` relative to the current URL and 404s.
 
-## The SharedArrayBuffer Problem
+## SharedArrayBuffer and the Header Tax
 
-mGBA's WASM build uses `SharedArrayBuffer` for its threading model. This is where things get painful. Browsers only expose `SharedArrayBuffer` when the page is served with two specific HTTP headers:
+mGBA's threading model needs `SharedArrayBuffer`. Browsers gate that behind COOP/COEP headers:
 
 ```
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
 
-These are the COOP and COEP headers. Without them, `SharedArrayBuffer` is undefined, and the emulator crashes on initialization with a cryptic error about memory allocation.
+No headers, no `SharedArrayBuffer`, and the emulator dies on init with a vague memory allocation error.
 
-In Next.js, you set custom headers in `next.config.js`:
+The problem is COEP forces every resource on the page to be same-origin or explicitly opt in via `Cross-Origin-Resource-Policy`. That immediately broke CDN fonts, third-party images, analytics scripts. I had two options: proxy everything through API routes, or scope the headers to just the emulator route.
 
-```typescript
-// next.config.js
-const nextConfig = {
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "Cross-Origin-Opener-Policy",
-            value: "same-origin",
-          },
-          {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp",
-          },
-        ],
-      },
-    ];
-  },
-};
-
-module.exports = nextConfig;
-```
-
-There's a catch, though. Enabling COEP means every resource on your page must either be same-origin or explicitly opt in with a `Cross-Origin-Resource-Policy` header. This broke several third-party images and fonts I was loading from CDNs. I ended up proxying external assets through a Next.js API route or self-hosting them to keep everything same-origin. It's a trade-off: you get `SharedArrayBuffer`, but you lose the convenience of loading resources from arbitrary origins.
-
-For pages that don't need the emulator, I scoped the headers more narrowly to only apply to the emulator route, so the rest of the app isn't affected:
+I scoped them:
 
 ```typescript
 {
@@ -95,14 +54,15 @@ For pages that don't need the emulator, I scoped the headers more narrowly to on
 }
 ```
 
-## Turbopack and WASM Files
+Rest of the app stays unaffected. The emulator page is its own isolated context.
 
-During development, I hit an issue with Turbopack (Next.js's Rust-based dev bundler) not handling `.wasm` files correctly. It would either try to parse them as JavaScript modules or fail to serve them with the right MIME type. The workaround was straightforward but annoying: I kept the WASM files in `public/` and loaded them via fetch rather than relying on the module system:
+## Turbopack Doesn't Like WASM
+
+During dev, Turbopack kept trying to parse `.wasm` files as JS modules or serving them with the wrong MIME type. The fix was dumb but effective — just fetch the binary manually and hand it to the module initializer:
 
 ```typescript
-// Explicitly fetch the WASM binary to avoid bundler issues
-const wasmResponse = await fetch("/emulator/mgba.wasm");
-const wasmBinary = await wasmResponse.arrayBuffer();
+const wasmBinary = await fetch("/emulator/mgba.wasm")
+  .then((r) => r.arrayBuffer());
 
 const Module = await initMGBA({
   canvas: canvasRef.current,
@@ -110,11 +70,11 @@ const Module = await initMGBA({
 });
 ```
 
-By pre-fetching the binary and passing it directly, I bypassed whatever Turbopack was doing to `.wasm` imports. In production with Webpack, the standard `locateFile` approach works fine, but during development this explicit fetch saved me a lot of headaches.
+Webpack in production handles `locateFile` fine. This is purely a dev-time workaround.
 
-## Canvas Rendering
+## The React Wrapper
 
-mGBA renders to an HTML `<canvas>` element. The emulator's Emscripten build targets a 240x160 canvas (the GBA's native resolution) and uses WebGL to draw frames. In the React component, I create a ref to the canvas and pass it to the emulator on mount:
+The emulator renders to a canvas. The component is straightforward — ref the canvas, init the emulator on mount, tear it down on unmount:
 
 ```tsx
 const EmulatorScreen: React.FC<{ romUrl: string }> = ({ romUrl }) => {
@@ -123,7 +83,6 @@ const EmulatorScreen: React.FC<{ romUrl: string }> = ({ romUrl }) => {
 
   useEffect(() => {
     if (!canvasRef.current) return;
-
     let mounted = true;
 
     (async () => {
@@ -153,80 +112,44 @@ const EmulatorScreen: React.FC<{ romUrl: string }> = ({ romUrl }) => {
 };
 ```
 
-The `imageRendering: "pixelated"` CSS property is essential. Without it, the browser smooths the 240x160 output when scaling it up, and pixel art looks like a blurry mess.
+`imageRendering: "pixelated"` is the difference between crisp pixel art and a blurry upscaled mess. The GBA's native resolution is 240x160 — without that property the browser bilinear-filters it when scaling up.
 
-## Save State Persistence with IndexedDB
+## Save Persistence
 
-A GBA emulator isn't much use if your save disappears when you close the tab. I persist both the battery save (SRAM) and quick save states to IndexedDB using a thin wrapper. IndexedDB can store large binary blobs efficiently, which makes it ideal for save data that can be tens of kilobytes.
+Saves go to IndexedDB. It handles binary blobs well, and the API is simple enough with the `idb` wrapper:
 
 ```typescript
-import { openDB } from "idb";
-
-const DB_NAME = "professorBasilLab";
-const STORE_NAME = "emulatorSaves";
-
-async function getDB() {
-  return openDB(DB_NAME, 1, {
-    upgrade(db) {
-      db.createObjectStore(STORE_NAME);
-    },
-  });
-}
-
 export async function saveSRAM(romName: string, sram: ArrayBuffer) {
   const db = await getDB();
   await db.put(STORE_NAME, sram, `${romName}:sram`);
 }
 
-export async function loadSRAM(
-  romName: string
-): Promise<ArrayBuffer | undefined> {
+export async function loadSRAM(romName: string): Promise<ArrayBuffer | undefined> {
   const db = await getDB();
   return db.get(STORE_NAME, `${romName}:sram`);
 }
-
-export async function saveState(romName: string, slot: number, state: ArrayBuffer) {
-  const db = await getDB();
-  await db.put(STORE_NAME, state, `${romName}:state:${slot}`);
-}
 ```
 
-On emulator startup, I check IndexedDB for an existing SRAM file and load it before the emulator begins execution. On every frame where the save flag is dirty (or on an interval), I dump the SRAM back to IndexedDB. Quick save states work similarly but are triggered manually by the user.
+On startup, check IndexedDB for existing SRAM and load it before the emulator starts executing. On a dirty-save interval, dump it back. Quick save states use the same store with a slot key. Nothing fancy — it just works, and your progress survives tab closes.
 
-## Speed Controls
+## Speed and the Pokemon Import
 
-One popular feature is speed control. Nobody wants to grind through Route 110 at 1x speed in 2026. The mGBA WASM build exposes a function to set the emulation speed multiplier:
+mGBA exposes `setSpeed()` on the module. I cap it at 4x because above that frames drop and audio falls apart. At 4x the water routes in Emerald go from painful to tolerable.
 
-```typescript
-function setEmulatorSpeed(module: any, multiplier: number) {
-  // mGBA exposes setSpeed on the module
-  module.setSpeed(multiplier);
-}
-
-// In the UI
-<button onClick={() => setEmulatorSpeed(moduleRef.current, 1)}>1x</button>
-<button onClick={() => setEmulatorSpeed(moduleRef.current, 2)}>2x</button>
-<button onClick={() => setEmulatorSpeed(moduleRef.current, 4)}>4x</button>
-```
-
-At 4x, Emerald's lengthy water routes become almost bearable. I capped it at 4x because higher multipliers start dropping frames and audio gets garbled.
-
-## The Import Pokemon Feature
-
-This is where the emulator ties into the rest of Professor Basil's Lab. The emulator's SRAM is the same format as a `.sav` file — it's a raw dump of the cartridge's battery-backed memory. I can read it directly from the running emulator without the user having to export anything:
+The import feature is the payoff for all of this. The emulator's SRAM is byte-for-byte identical to a `.sav` file. I read it directly from the running module:
 
 ```typescript
 function importFromEmulator(module: any) {
-  const sram = module.getSRAM(); // Returns Uint8Array
+  const sram = module.getSRAM();
   const pokemon = parseSaveFile(new DataView(sram.buffer));
   return pokemon;
 }
 ```
 
-The `parseSaveFile` function is the same Gen 3 save parser I wrote about in my other post. The user clicks "Import Pokemon," the app reads SRAM from the running emulator, parses out the party and PC boxes, and adds them to the team builder. It feels like magic when it works — you catch a Ralts, tap a button, and it shows up in your team ready for the battle simulator.
+`parseSaveFile` is the same Gen 3 parser from the other post. User catches a Ralts, taps "Import," and it's in the team builder. No file dialogs, no exports. The emulator and the app share the same memory.
 
-## Lessons Learned
+## The Tradeoff
 
-Embedding a WASM emulator in a modern web framework is a collision of two very different worlds. The emulator expects a low-level environment with direct memory access and threading. Next.js expects everything to be a nice React component with server-side rendering. Making them coexist required pragmatic compromises: scoping security headers, bypassing the bundler for binary assets, and bridging imperative C code with declarative React patterns.
+This whole thing is a collision between two worlds. mGBA expects raw memory access, threading, and a canvas it owns. Next.js expects nice React components and server rendering. Making them coexist meant scoping security headers so they don't poison the rest of the app, bypassing the bundler for binary assets, and wrapping imperative C lifecycle in `useEffect` cleanup.
 
-But the result is worth every workaround. Having a fully playable GBA experience inside a web app, with save persistence and direct integration into the rest of the platform, is the kind of feature that makes Professor Basil's Lab feel like more than just another Pokemon tool.
+Every workaround was pragmatic. None of it is elegant. But you can play FireRed in a browser tab and pull Pokemon directly into a battle simulator, and that's the part that matters.
