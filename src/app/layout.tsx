@@ -8,6 +8,7 @@ import Footer from "@/components/footer/footer";
 import AppOverlays from "@/components/app-overlays";
 import { Providers } from "@/components/providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: config.title,
@@ -70,12 +71,19 @@ export default function RootLayout({
         `}} />
       </head>
       <body>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-[var(--gold)] focus:text-black focus:font-mono focus:text-sm focus:font-semibold"
+        >
+          Skip to content
+        </a>
         <Providers>
           <Header />
           {children}
           <Footer />
           <AppOverlays />
           <SpeedInsights />
+          <Analytics />
         </Providers>
       </body>
     </html>

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, User } from "lucide-react";
 import RevealAnimation from "@/components/reveal-animations";
+import PageTransition from "@/components/page-transition";
 
 export const metadata = {
   title: "Blog | Portfolio",
@@ -20,6 +21,7 @@ export default function BlogPage() {
   });
 
   return (
+    <PageTransition>
     <div className="container mx-auto px-4 py-24 min-h-screen font-sans">
       <RevealAnimation>
         <h1 className="text-4xl md:text-6xl font-bold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
@@ -67,5 +69,6 @@ export default function BlogPage() {
         ))}
       </div>
     </div>
+    </PageTransition>
   );
 }

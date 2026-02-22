@@ -11,7 +11,7 @@ import { usePreloader } from "./preloader";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { Section, getKeyboardState } from "./animated-background-config";
-import { useSounds } from "./realtime/hooks/use-sounds";
+import { useSounds } from "@/hooks/use-sounds";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -392,7 +392,7 @@ const AnimatedBackground = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Spline
-        className="w-full h-full fixed"
+        className={`w-full h-full fixed ${activeSection !== "skills" ? "pointer-events-none" : ""}`}
         ref={splineContainer}
         onLoad={(app: Application) => {
           setSplineApp(app);

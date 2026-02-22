@@ -28,7 +28,15 @@ const ProjectsSection = () => {
           <Modall key={project.id} project={project} />
         ))}
       </div>
-      <GitHubProgressTracker repo="BFAlajid/professor-basils-lab" />
+      <div className="space-y-6">
+        {projects.filter(p => p.github).map((project) => (
+          <GitHubProgressTracker
+            key={project.id}
+            repo={project.github!.replace("https://github.com/", "")}
+            repoName={project.title}
+          />
+        ))}
+      </div>
     </SectionWrapper>
   );
 };

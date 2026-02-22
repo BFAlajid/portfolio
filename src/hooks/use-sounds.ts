@@ -8,7 +8,7 @@ export const useSounds = () => {
   useEffect(() => {
     const loadSound = async () => {
       try {
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
         if (!AudioContext) return;
 
         const ctx = new AudioContext();
