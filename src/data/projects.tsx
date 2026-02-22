@@ -140,7 +140,7 @@ const projects: Project[] = [
     id: "professor-basils-lab",
     category: "Full-Stack Web App",
     title: "Professor Basil's Lab",
-    src: "/assets/projects-screenshots/professor-basils-lab/landing.png",
+    src: "/assets/projects-screenshots/professor-basils-lab/landing.svg",
     screenshots: ["landing.png"],
     skills: {
       frontend: [
@@ -198,7 +198,7 @@ const projects: Project[] = [
     id: "manila-watch-atelier",
     category: "E-Commerce",
     title: "Manila Watch Atelier",
-    src: "/assets/projects-screenshots/manila-watch-atelier/landing.png",
+    src: "/assets/projects-screenshots/manila-watch-atelier/landing.svg",
     screenshots: ["landing.png"],
     skills: {
       frontend: [

@@ -1,29 +1,104 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 533">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1a2e"/>
-      <stop offset="100%" style="stop-color:#16213e"/>
-    </linearGradient>
-    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#C9A84C"/>
-      <stop offset="100%" style="stop-color:#D4B86A"/>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a8c3f"/>
+      <stop offset="60%" style="stop-color:#6ab85a"/>
+      <stop offset="100%" style="stop-color:#2d5a27"/>
     </linearGradient>
   </defs>
-  <rect width="800" height="600" fill="url(#bg)"/>
-  <!-- Pokeball outline -->
-  <circle cx="400" cy="260" r="100" fill="none" stroke="url(#gold)" stroke-width="3" opacity="0.3"/>
-  <line x1="300" y1="260" x2="500" y2="260" stroke="url(#gold)" stroke-width="3" opacity="0.3"/>
-  <circle cx="400" cy="260" r="25" fill="none" stroke="url(#gold)" stroke-width="3" opacity="0.3"/>
-  <!-- Title -->
-  <text x="400" y="420" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="28" font-weight="bold">Professor Basil's Lab</text>
-  <text x="400" y="455" text-anchor="middle" fill="#888" font-family="monospace" font-size="14">Team Builder | Battle Simulator | GBA Emulator</text>
-  <!-- Tech badges -->
-  <rect x="200" y="490" width="80" height="24" rx="4" fill="#C9A84C" opacity="0.2"/>
-  <text x="240" y="507" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="11">Next.js</text>
-  <rect x="290" y="490" width="80" height="24" rx="4" fill="#C9A84C" opacity="0.2"/>
-  <text x="330" y="507" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="11">React 19</text>
-  <rect x="380" y="490" width="80" height="24" rx="4" fill="#C9A84C" opacity="0.2"/>
-  <text x="420" y="507" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="11">WASM</text>
-  <rect x="470" y="490" width="95" height="24" rx="4" fill="#C9A84C" opacity="0.2"/>
-  <text x="517" y="507" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="11">TypeScript</text>
+  <!-- App background -->
+  <rect width="800" height="533" fill="#1e1b2e"/>
+
+  <!-- Top nav bar -->
+  <rect x="0" y="0" width="800" height="28" fill="#161326"/>
+  <text x="120" y="18" fill="#8888aa" font-family="monospace" font-size="11">Team</text>
+  <text x="185" y="18" fill="#8888aa" font-family="monospace" font-size="11">Type Coverage</text>
+  <text x="310" y="18" fill="#8888aa" font-family="monospace" font-size="11">Stats</text>
+  <text x="370" y="18" fill="#8888aa" font-family="monospace" font-size="11">Damage Calc</text>
+  <text x="490" y="18" fill="#8888aa" font-family="monospace" font-size="11">Battle</text>
+  <text x="555" y="18" fill="#8888aa" font-family="monospace" font-size="11">Wild</text>
+  <text x="605" y="18" fill="#8888aa" font-family="monospace" font-size="11">Explore</text>
+  <rect x="670" y="5" width="40" height="18" rx="3" fill="none"/>
+  <text x="675" y="18" fill="#ff6b6b" font-family="monospace" font-size="11" font-weight="bold">GBA</text>
+
+  <!-- Controls row -->
+  <rect x="100" y="38" width="60" height="22" rx="4" fill="#2a2640" stroke="#444" stroke-width="1"/>
+  <text x="113" y="53" fill="#ccc" font-family="monospace" font-size="10">Pause</text>
+  <rect x="168" y="38" width="55" height="22" rx="4" fill="#2a2640" stroke="#444" stroke-width="1"/>
+  <text x="178" y="53" fill="#ccc" font-family="monospace" font-size="10">Reset</text>
+
+  <!-- Save/Load -->
+  <text x="235" y="53" fill="#888" font-family="monospace" font-size="9">Save:</text>
+  <rect x="270" y="40" width="18" height="18" rx="3" fill="#3b82f6"/><text x="276" y="53" fill="#fff" font-family="monospace" font-size="10">1</text>
+  <rect x="292" y="40" width="18" height="18" rx="3" fill="#3b82f6"/><text x="298" y="53" fill="#fff" font-family="monospace" font-size="10">2</text>
+  <rect x="314" y="40" width="18" height="18" rx="3" fill="#3b82f6"/><text x="320" y="53" fill="#fff" font-family="monospace" font-size="10">3</text>
+
+  <text x="345" y="53" fill="#888" font-family="monospace" font-size="9">Speed:</text>
+  <rect x="390" y="40" width="20" height="18" rx="3" fill="#22c55e"/><text x="394" y="53" fill="#fff" font-family="monospace" font-size="9">1x</text>
+  <rect x="414" y="40" width="20" height="18" rx="3" fill="#2a2640"/><text x="418" y="53" fill="#888" font-family="monospace" font-size="9">2x</text>
+  <rect x="438" y="40" width="20" height="18" rx="3" fill="#2a2640"/><text x="442" y="53" fill="#888" font-family="monospace" font-size="9">4x</text>
+
+  <!-- Import buttons -->
+  <rect x="100" y="65" width="90" height="20" rx="4" fill="#2a2640" stroke="#555" stroke-width="1"/>
+  <text x="115" y="79" fill="#ccc" font-family="monospace" font-size="9">Import .sav</text>
+  <rect x="198" y="65" width="110" height="20" rx="4" fill="#22c55e"/>
+  <text x="210" y="79" fill="#fff" font-family="monospace" font-size="9" font-weight="bold">Import Pokémon</text>
+
+  <!-- GBA Screen -->
+  <rect x="175" y="95" width="450" height="300" rx="4" fill="#000" stroke="#333" stroke-width="2"/>
+
+  <!-- Sky gradient inside screen -->
+  <rect x="177" y="97" width="446" height="200" fill="url(#sky)"/>
+
+  <!-- Ground platform (yellow ellipse) -->
+  <ellipse cx="400" cy="285" rx="110" ry="30" fill="#d4b830" opacity="0.8"/>
+  <ellipse cx="400" cy="285" rx="90" ry="22" fill="#e8d44d" opacity="0.6"/>
+
+  <!-- Professor character (simplified pixel art style) -->
+  <!-- Head -->
+  <rect x="385" y="195" width="30" height="28" rx="4" fill="#f0c8a0"/>
+  <!-- Hair -->
+  <rect x="383" y="190" width="34" height="14" rx="3" fill="#8b6914"/>
+  <!-- Body (lab coat) -->
+  <rect x="380" y="223" width="40" height="35" rx="2" fill="#e8e8e8"/>
+  <!-- Arms -->
+  <rect x="370" y="228" width="12" height="25" rx="2" fill="#e8e8e8"/>
+  <rect x="418" y="228" width="12" height="25" rx="2" fill="#e8e8e8"/>
+  <!-- Legs -->
+  <rect x="387" y="258" width="12" height="18" rx="1" fill="#8b7355"/>
+  <rect x="401" y="258" width="12" height="18" rx="1" fill="#8b7355"/>
+
+  <!-- Dialog box -->
+  <rect x="195" y="320" width="410" height="65" rx="8" fill="#f0ffff" stroke="#00d4d4" stroke-width="3"/>
+  <text x="215" y="355" fill="#333" font-family="serif" font-size="16">Hi! Sorry to keep you waiting!</text>
+  <text x="460" y="355" fill="#e44" font-family="serif" font-size="16">♥</text>
+
+  <!-- D-pad -->
+  <rect x="175" y="430" width="22" height="22" rx="2" fill="#3a3660" stroke="#555" stroke-width="1"/>
+  <text x="182" y="445" fill="#aaa" font-family="monospace" font-size="10">▲</text>
+  <rect x="152" y="452" width="22" height="22" rx="2" fill="#3a3660" stroke="#555" stroke-width="1"/>
+  <text x="159" y="467" fill="#aaa" font-family="monospace" font-size="10">◄</text>
+  <rect x="198" y="452" width="22" height="22" rx="2" fill="#3a3660" stroke="#555" stroke-width="1"/>
+  <text x="205" y="467" fill="#aaa" font-family="monospace" font-size="10">►</text>
+  <rect x="175" y="474" width="22" height="22" rx="2" fill="#3a3660" stroke="#555" stroke-width="1"/>
+  <text x="182" y="489" fill="#aaa" font-family="monospace" font-size="10">▼</text>
+
+  <!-- Select / Start -->
+  <rect x="310" y="455" width="50" height="20" rx="10" fill="#3a3660" stroke="#555" stroke-width="1"/>
+  <text x="318" y="469" fill="#aaa" font-family="monospace" font-size="9">Select</text>
+  <rect x="370" y="455" width="45" height="20" rx="10" fill="#3a3660" stroke="#555" stroke-width="1"/>
+  <text x="380" y="469" fill="#aaa" font-family="monospace" font-size="9">Start</text>
+
+  <!-- A/B buttons -->
+  <circle cx="530" cy="458" r="16" fill="#e44"/><text x="525" y="463" fill="#fff" font-family="monospace" font-size="12" font-weight="bold">A</text>
+  <circle cx="565" cy="458" r="16" fill="#e44"/><text x="560" y="463" fill="#fff" font-family="monospace" font-size="12" font-weight="bold">B</text>
+
+  <!-- L/R buttons -->
+  <rect x="620" y="435" width="28" height="18" rx="3" fill="#3a3660" stroke="#555" stroke-width="1"/>
+  <text x="629" y="448" fill="#aaa" font-family="monospace" font-size="10">L</text>
+  <rect x="620" y="460" width="28" height="18" rx="3" fill="#3a3660" stroke="#555" stroke-width="1"/>
+  <text x="629" y="473" fill="#aaa" font-family="monospace" font-size="10">R</text>
+
+  <!-- Key hints text -->
+  <text x="260" y="418" fill="#555" font-family="monospace" font-size="7">Arrow Keys = D-Pad | Z = A | X = B | Enter = Start | Backspace = Select</text>
 </svg>
