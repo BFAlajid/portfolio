@@ -189,11 +189,26 @@ const projects: Project[] = [
 
           <TypographyH3 className="my-4 mt-8">Core Features</TypographyH3>
           <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
-            <li>Full National Pokedex (1025 Pokemon) with EV/IV/nature/ability/item/move customization</li>
-            <li>Battle engine using Gen V+ damage formula with Mega Evolution, Terastallization, and Dynamax</li>
-            <li>Wild encounters with real catch formula, 14 ball types, and shiny odds (1/4096)</li>
-            <li>Embedded GBA emulator (mGBA → WASM) with save states, speed controls, and Gen 3 save import</li>
-            <li>Type coverage matrix, stat radar chart, damage calculator, and team weakness analysis</li>
+            <li>
+              Full National Pokedex (1025 Pokemon) with
+              EV/IV/nature/ability/item/move customization
+            </li>
+            <li>
+              Battle engine using Gen V+ damage formula with Mega Evolution,
+              Terastallization, and Dynamax
+            </li>
+            <li>
+              Wild encounters with real catch formula, 14 ball types, and shiny
+              odds (1/4096)
+            </li>
+            <li>
+              Embedded GBA emulator (mGBA → WASM) with save states, speed
+              controls, and Gen 3 save import
+            </li>
+            <li>
+              Type coverage matrix, stat radar chart, damage calculator, and
+              team weakness analysis
+            </li>
             <li>Pokemon Showdown format import/export and URL team sharing</li>
           </ul>
 
@@ -203,15 +218,32 @@ const projects: Project[] = [
             TanStack Query, WebAssembly, IndexedDB, PokeAPI
           </p>
 
-          <TypographyH3 className="my-4 mt-8">Engineering Highlights</TypographyH3>
+          <TypographyH3 className="my-4 mt-8">
+            Engineering Highlights
+          </TypographyH3>
           <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
-            <li>Battle engine built as a pure useReducer state machine (deterministic, replay-capable)</li>
-            <li>Gen 3 binary save parser: XOR decryption, 24 sub-structure permutations, bit-packed IV extraction</li>
-            <li>Zero backend, all persistence via localStorage and IndexedDB</li>
+            <li>
+              Battle engine built as a pure useReducer state machine
+              (deterministic, replay-capable)
+            </li>
+            <li>
+              Gen 3 binary save parser: XOR decryption, 24 sub-structure
+              permutations, bit-packed IV extraction
+            </li>
+            <li>
+              Zero backend, all persistence via localStorage and IndexedDB
+            </li>
           </ul>
 
-          <Link href="/projects/professor-basils-lab" className="inline-block mt-6">
-            <Button variant="outline" size="sm" className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono">
+          <Link
+            href="/projects/professor-basils-lab"
+            className="inline-block mt-6"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono"
+            >
               View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
@@ -249,8 +281,15 @@ const projects: Project[] = [
             Next.js, TypeScript, Tailwind, Framer Motion
           </p>
 
-          <Link href="/projects/manila-watch-atelier" className="inline-block mt-6">
-            <Button variant="outline" size="sm" className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono">
+          <Link
+            href="/projects/manila-watch-atelier"
+            className="inline-block mt-6"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono"
+            >
               View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
@@ -285,11 +324,25 @@ const projects: Project[] = [
 
           <TypographyH3 className="my-4 mt-8">What I Built</TypographyH3>
           <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
-            <li>Configuration-driven form engine with conditional visibility and cross-field validation</li>
-            <li>SLA-driven case routing with auto-escalation for overdue work items</li>
-            <li>REST integration layer (Connect-REST) with scoped data pages and error handling</li>
-            <li>Reporting infrastructure with dynamic filtering, table joins, and summarization</li>
-            <li>Playwright + CRX E2E test suite that cut QA cycle time by 40%</li>
+            <li>
+              Configuration-driven form engine with conditional visibility and
+              cross-field validation
+            </li>
+            <li>
+              SLA-driven case routing with auto-escalation for overdue work
+              items
+            </li>
+            <li>
+              REST integration layer (Connect-REST) with scoped data pages and
+              error handling
+            </li>
+            <li>
+              Reporting infrastructure with dynamic filtering, table joins, and
+              summarization
+            </li>
+            <li>
+              Playwright + CRX E2E test suite that cut QA cycle time by 40%
+            </li>
           </ul>
 
           <TypographyH3 className="my-4 mt-8">Tech Stack</TypographyH3>
@@ -301,8 +354,15 @@ const projects: Project[] = [
             Proprietary enterprise project. No public source code or live demo.
           </p>
 
-          <Link href="/projects/government-case-management" className="inline-block mt-6">
-            <Button variant="outline" size="sm" className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono">
+          <Link
+            href="/projects/government-case-management"
+            className="inline-block mt-6"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono"
+            >
               View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>

@@ -19,14 +19,35 @@ import SectionWrapper from "../ui/section-wrapper";
 
 const DOWNLOAD_SEED = 47;
 const STORAGE_KEY = "resume-downloads";
+const GH_STATS_KEY = "gh_user_stats";
 
 const HeroSection = () => {
   const { isLoading } = usePreloader();
   const [downloadCount, setDownloadCount] = useState<number | null>(null);
+  const [repoCount, setRepoCount] = useState<number | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     setDownloadCount(stored ? parseInt(stored, 10) : DOWNLOAD_SEED);
+
+    // Fetch GitHub stats
+    (async () => {
+      try {
+        const cached = localStorage.getItem(GH_STATS_KEY);
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < config.cacheTTL) {
+            setRepoCount(data.public_repos);
+            return;
+          }
+        }
+        const res = await fetch(`https://api.github.com/users/${config.githubUsername}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setRepoCount(data.public_repos);
+        localStorage.setItem(GH_STATS_KEY, JSON.stringify({ data: { public_repos: data.public_repos }, timestamp: Date.now() }));
+      } catch { /* fallback to null — stat just won't show */ }
+    })();
   }, []);
 
   const handleResumeClick = () => {
@@ -112,6 +133,16 @@ const HeroSection = () => {
                       years shipping production code
                     </span>
                   </div>
+                  {repoCount !== null && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[var(--gold)] font-bold text-lg">
+                        {repoCount}
+                      </span>
+                      <span className="text-slate-500 dark:text-zinc-500">
+                        public repos
+                      </span>
+                    </div>
+                  )}
                 </div>
               </BlurIn>
 
