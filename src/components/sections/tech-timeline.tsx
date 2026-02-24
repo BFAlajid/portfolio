@@ -32,6 +32,9 @@ const TECH_TO_SKILL: Record<string, SkillNames> = {
   Nginx: SkillNames.NGINX,
   Vercel: SkillNames.VERCEL,
   GCP: SkillNames.GCP,
+  Python: SkillNames.PYTHON,
+  FastAPI: SkillNames.FASTAPI,
+  Playwright: SkillNames.PLAYWRIGHT,
 };
 
 type TimelineEntry = {
@@ -44,7 +47,7 @@ const TIMELINE: TimelineEntry[] = [
   { year: "2019", label: "The Foundations", techs: ["Java", "HTML", "CSS", "Git"] },
   { year: "2020", label: "Frontend & Backend", techs: ["JavaScript", "React", "Node.js"] },
   { year: "2021", label: "Going Full-Stack", techs: ["TypeScript", "Express", "MongoDB", "PostgreSQL"] },
-  { year: "2022", label: "Production Scale", techs: ["Next.js", "Tailwind", "Docker", "AWS"] },
+  { year: "2022", label: "Production Scale", techs: ["Next.js", "Tailwind", "Python", "FastAPI", "Docker", "AWS"] },
   { year: "2023", label: "Broadening the Stack", techs: ["Vue.js", "Firebase", "Linux", "Nginx"] },
   { year: "2024", label: "Animation & Cloud", techs: ["Framer Motion", "GSAP", "Vercel", "GCP"] },
   { year: "2025", label: "Low-Level & Testing", techs: ["WebAssembly", "TanStack Query", "Playwright"] },

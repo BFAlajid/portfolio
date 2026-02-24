@@ -24,6 +24,9 @@ export enum SkillNames {
   GCP = "gcp",
   VIM = "vim",
   VERCEL = "vercel",
+  PYTHON = "python",
+  FASTAPI = "fastapi",
+  PLAYWRIGHT = "playwright",
 }
 
 export type Skill = {
@@ -235,6 +238,30 @@ export const SKILLS: Record<SkillNames, Skill> = {
     shortDescription: "One-click deploys, edge functions, analytics.",
     color: "#6cc24a",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg",
+  },
+  [SkillNames.PYTHON]: {
+    id: 26,
+    name: "python",
+    label: "Python",
+    shortDescription: "Backend services, data processing, automation scripts.",
+    color: "#3776ab",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+  },
+  [SkillNames.FASTAPI]: {
+    id: 27,
+    name: "fastapi",
+    label: "FastAPI",
+    shortDescription: "Async REST APIs, auto-generated docs, type validation.",
+    color: "#009688",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg",
+  },
+  [SkillNames.PLAYWRIGHT]: {
+    id: 28,
+    name: "playwright",
+    label: "Playwright",
+    shortDescription: "E2E test automation, cross-browser, parameterized suites.",
+    color: "#2ead33",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/playwright/playwright-original.svg",
   },
 };
 
