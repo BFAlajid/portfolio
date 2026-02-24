@@ -19,35 +19,14 @@ import SectionWrapper from "../ui/section-wrapper";
 
 const DOWNLOAD_SEED = 47;
 const STORAGE_KEY = "resume-downloads";
-const GH_STATS_KEY = "gh_user_stats";
 
 const HeroSection = () => {
   const { isLoading } = usePreloader();
   const [downloadCount, setDownloadCount] = useState<number | null>(null);
-  const [repoCount, setRepoCount] = useState<number | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     setDownloadCount(stored ? parseInt(stored, 10) : DOWNLOAD_SEED);
-
-    // Fetch GitHub stats
-    (async () => {
-      try {
-        const cached = localStorage.getItem(GH_STATS_KEY);
-        if (cached) {
-          const { data, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < config.cacheTTL) {
-            setRepoCount(data.public_repos);
-            return;
-          }
-        }
-        const res = await fetch(`https://api.github.com/users/${config.githubUsername}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        setRepoCount(data.public_repos);
-        localStorage.setItem(GH_STATS_KEY, JSON.stringify({ data: { public_repos: data.public_repos }, timestamp: Date.now() }));
-      } catch { /* fallback to null — stat just won't show */ }
-    })();
   }, []);
 
   const handleResumeClick = () => {
@@ -70,18 +49,6 @@ const HeroSection = () => {
         >
           <div className={cn("flex flex-col transition-opacity duration-500", isLoading ? "opacity-0" : "opacity-100")}>
               <div>
-                <BlurIn delay={0.7}>
-                  <p
-                    className={cn(
-                      "md:self-start mt-4 font-thin text-md text-slate-500 dark:text-zinc-400",
-                      "cursor-default font-display sm:text-xl md:text-xl whitespace-nowrap bg-clip-text ",
-                    )}
-                  >
-                    Hi, I am
-                    <br className="md:hidden" />
-                  </p>
-                </BlurIn>
-
                 <BlurIn delay={1}>
                   <h1
                     className={cn(
@@ -105,48 +72,46 @@ const HeroSection = () => {
                       "cursor-default font-display sm:text-xl md:text-xl whitespace-nowrap bg-clip-text ",
                     )}
                   >
-                    Full Stack Software Engineer
+                    Full Stack Developer | Enterprise Systems &amp; Test Automation
                   </p>
                 </BlurIn>
               </div>
 
-              {/* Stats Ticker */}
+              {/* Impact Stats */}
               <BlurIn delay={1.5}>
                 <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-mono">
                   <div className="flex items-center gap-2">
                     <span className="text-[var(--gold)] font-bold text-lg">
-                      5+
+                      40%
                     </span>
                     <span className="text-slate-500 dark:text-zinc-500">
-                      years experience
+                      QA cycle time reduced
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[var(--gold)] font-bold text-lg">
-                      3
+                      500+
                     </span>
                     <span className="text-slate-500 dark:text-zinc-500">
-                      companies
+                      users on systems I built
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[var(--gold)] font-bold text-lg">
-                      15
+                      20+
                     </span>
                     <span className="text-slate-500 dark:text-zinc-500">
-                      certifications
+                      projects shipped end-to-end
                     </span>
                   </div>
-                  {repoCount !== null && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-[var(--gold)] font-bold text-lg">
-                        {repoCount}
-                      </span>
-                      <span className="text-slate-500 dark:text-zinc-500">
-                        public repos
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[var(--gold)] font-bold text-lg">
+                      7
+                    </span>
+                    <span className="text-slate-500 dark:text-zinc-500">
+                      years shipping production code
+                    </span>
+                  </div>
                 </div>
               </BlurIn>
 
@@ -157,8 +122,8 @@ const HeroSection = () => {
                     Currently
                   </p>
                   <div className="space-y-1 text-sm font-mono text-slate-600 dark:text-zinc-400">
-                    <p>Building enterprise systems at Accenture</p>
-                    <p>Open to global remote roles</p>
+                    <p>Custom Software Engineer at Accenture</p>
+                    <p>Owning workflow automation &amp; test engineering for a government defense platform serving 500+ users</p>
                   </div>
                 </div>
               </BlurIn>
@@ -202,7 +167,7 @@ const HeroSection = () => {
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
-                      <p>Let&apos;s build something.</p>
+                      <p>I build systems that scale under enterprise constraints.</p>
                     </TooltipContent>
                   </Tooltip>
                   <div className="flex items-center h-full gap-2">

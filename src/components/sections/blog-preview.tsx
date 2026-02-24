@@ -32,7 +32,7 @@ const BLOG_POSTS = [
 
 const BlogPreviewSection = () => {
   return (
-    <SectionWrapper id="blog" className="max-w-7xl mx-auto py-20 px-6">
+    <SectionWrapper id="blog" className="relative z-10 max-w-7xl mx-auto py-20 px-6">
       <SectionHeader id="blog" title="Latest Writing" className="static mb-0" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         {BLOG_POSTS.map((post, i) => (

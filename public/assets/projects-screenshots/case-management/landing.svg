@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <rect width="600" height="400" fill="#0A0A0A"/>
+
+  <!-- Grid pattern -->
+  <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1A1A1A" stroke-width="0.5"/>
+  </pattern>
+  <rect width="600" height="400" fill="url(#grid)"/>
+
+  <!-- Workflow nodes -->
+  <!-- Intake node -->
+  <rect x="60" y="170" width="100" height="60" rx="8" fill="#1A1A1A" stroke="#C9A84C" stroke-width="1.5"/>
+  <text x="110" y="195" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">INTAKE</text>
+  <text x="110" y="212" text-anchor="middle" fill="#666" font-family="monospace" font-size="8">Form Engine</text>
+
+  <!-- Routing node -->
+  <rect x="220" y="170" width="100" height="60" rx="8" fill="#1A1A1A" stroke="#C9A84C" stroke-width="1.5"/>
+  <text x="270" y="195" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">ROUTING</text>
+  <text x="270" y="212" text-anchor="middle" fill="#666" font-family="monospace" font-size="8">SLA Engine</text>
+
+  <!-- Processing node -->
+  <rect x="380" y="120" width="100" height="60" rx="8" fill="#1A1A1A" stroke="#C9A84C" stroke-width="1.5"/>
+  <text x="430" y="145" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">AGENCY A</text>
+  <text x="430" y="162" text-anchor="middle" fill="#666" font-family="monospace" font-size="8">Case Work</text>
+
+  <rect x="380" y="220" width="100" height="60" rx="8" fill="#1A1A1A" stroke="#C9A84C" stroke-width="1.5"/>
+  <text x="430" y="245" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">AGENCY B</text>
+  <text x="430" y="262" text-anchor="middle" fill="#666" font-family="monospace" font-size="8">Case Work</text>
+
+  <!-- Resolve node -->
+  <rect x="540" y="170" width="50" height="60" rx="8" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="1"/>
+  <text x="565" y="200" text-anchor="middle" fill="#666" font-family="monospace" font-size="8">DONE</text>
+
+  <!-- Connection lines -->
+  <line x1="160" y1="200" x2="220" y2="200" stroke="#C9A84C" stroke-width="1" opacity="0.6"/>
+  <line x1="320" y1="200" x2="380" y2="150" stroke="#C9A84C" stroke-width="1" opacity="0.6"/>
+  <line x1="320" y1="200" x2="380" y2="250" stroke="#C9A84C" stroke-width="1" opacity="0.6"/>
+  <line x1="480" y1="150" x2="540" y2="195" stroke="#2A2A2A" stroke-width="1" opacity="0.6"/>
+  <line x1="480" y1="250" x2="540" y2="205" stroke="#2A2A2A" stroke-width="1" opacity="0.6"/>
+
+  <!-- Arrows -->
+  <polygon points="218,197 218,203 224,200" fill="#C9A84C" opacity="0.6"/>
+  <polygon points="378,147 378,153 384,150" fill="#C9A84C" opacity="0.6"/>
+  <polygon points="378,247 378,253 384,250" fill="#C9A84C" opacity="0.6"/>
+
+  <!-- Title -->
+  <text x="300" y="50" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="14" font-weight="bold">CASE MANAGEMENT WORKFLOW</text>
+  <text x="300" y="70" text-anchor="middle" fill="#666" font-family="monospace" font-size="10">Government Defense Agency | 500+ Users | Multi-Agency</text>
+
+  <!-- Stats bar -->
+  <rect x="60" y="330" width="480" height="40" rx="6" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="0.5"/>
+  <text x="150" y="354" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="11">40% QA reduction</text>
+  <text x="350" y="354" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="11">Config-driven forms</text>
+  <text x="480" y="354" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="11">E2E automated</text>
+</svg>

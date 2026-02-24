@@ -22,7 +22,7 @@ const ExperienceSection = () => {
         <SectionHeader
           id="experience"
           title="Experience"
-          desc="Production systems. Real deadlines."
+          desc="Enterprise systems, test automation, and client-facing software."
           className="mb-12 md:mb-20 mt-0"
         />
 

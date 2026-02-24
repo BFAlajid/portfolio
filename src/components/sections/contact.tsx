@@ -14,19 +14,19 @@ import SectionWrapper from "../ui/section-wrapper";
 
 const ContactSection = () => {
   return (
-    <SectionWrapper id="contact" className="min-h-screen max-w-7xl mx-auto ">
+    <SectionWrapper id="contact" className="relative z-10 min-h-screen max-w-7xl mx-auto">
       <SectionHeader
         id="contact"
-        className="relative mb-14"
+        className="static mb-0"
         title={
           <>
-            LET&apos;S BUILD <br />
-            SOMETHING
+            WORK <br />
+            WITH ME
           </>
         }
       />
       <p className="text-center text-[#A0A0A0] font-mono text-sm mb-8 -mt-8">
-        Open to global remote roles. Available UTC+8.
+        Available for remote contracts and full-time roles. UTC+8, async-first.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 z-[9999] mx-4">
         <Card className="min-w-7xl bg-[#1A1A1A]/70 backdrop-blur-sm rounded-xl mt-10 md:mt-20 border-[#2A2A2A]">

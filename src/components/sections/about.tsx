@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SectionWrapper from "../ui/section-wrapper";
-import { SectionHeader } from "./section-header";
 import { config } from "@/data/config";
 import { getRelativeTime } from "@/lib/utils";
 
-const INFO_ITEMS = [
-  { label: "Location", value: "Cebu, Philippines" },
-  { label: "Timezone", value: "UTC+8" },
-  { label: "Status", value: "Open to global remote" },
-  { label: "Experience", value: "5+ years" },
+const PRINCIPLES = [
+  { label: "Deterministic over clever", desc: "Pure state machines, seeded RNG, reproducible builds. If I can't replay a bug, I can't fix it." },
+  { label: "Automate the pain", desc: "Replaced 3 days of manual QA with a 45-minute Playwright suite. If I do something twice, it becomes a script." },
+  { label: "Zero-backend when possible", desc: "Professor Basil's Lab runs entirely client-side. No servers to maintain, no costs to scale." },
+  { label: "Test the contract, not the implementation", desc: "E2E suites validate user workflows, not internal state. When I refactored the form engine, zero tests broke because they tested what users see, not how state is managed." },
+  { label: "Own it end-to-end", desc: "20+ projects delivered solo across 7 years, from requirements through production support. 100% delivery rate. When there's no team to delegate to, you learn what actually matters." },
+  { label: "Unblock before you build", desc: "Primary escalation point at Accenture for integration failures. Fixing other people's broken flows taught me more about systems than building my own features." },
 ];
 
 const fadeInUp = {
@@ -110,59 +111,44 @@ function GitHubActivity() {
 
 const AboutSection = () => {
   return (
-    <SectionWrapper className="flex flex-col items-center justify-center min-h-[80vh] py-20 z-10">
+    <SectionWrapper className="flex flex-col items-center justify-center min-h-[60vh] py-20 z-10">
       <div className="w-full max-w-4xl px-4 md:px-8 mx-auto">
-        <SectionHeader
-          id="about"
-          title="About"
-          desc="Who I am and what I do."
-          className="mb-12 md:mb-20 mt-0"
-        />
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl md:text-3xl font-bold text-center mb-12"
+        >
+          Engineering Principles
+        </motion.h2>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <motion.div
-            custom={0}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={fadeInUp}
-          >
-            <div className="p-6 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[var(--gold)]/30 transition-colors duration-300">
-              <p className="text-base text-[#A0A0A0] leading-relaxed">
-                Software engineer based in Cebu, Philippines. I build production
-                systems at Accenture for government clients, automate testing
-                with Playwright, and ship full stack apps with React, TypeScript,
-                and Next.js. 5+ years across enterprise, QA, and freelance.
-                Currently exploring TanStack Query, Framer Motion, and advanced
-                Next.js patterns.
-              </p>
-              <GitHubActivity />
-            </div>
-          </motion.div>
-
-          <motion.div
-            custom={1}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={fadeInUp}
-          >
-            <div className="p-6 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[var(--gold)]/30 transition-colors duration-300 h-full">
-              <div className="grid grid-cols-2 gap-6">
-                {INFO_ITEMS.map((item) => (
-                  <div key={item.label}>
-                    <p className="text-xs text-[#A0A0A0] mb-1">
-                      {item.label}
-                    </p>
-                    <p className="font-mono text-sm text-white">
-                      {item.value}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {PRINCIPLES.map((p, i) => (
+            <motion.div
+              key={p.label}
+              custom={i}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={fadeInUp}
+              className="p-6 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[var(--gold)]/30 transition-colors duration-300"
+            >
+              <h3 className="font-bold text-[var(--gold)] text-sm mb-2">{p.label}</h3>
+              <p className="text-sm text-[#A0A0A0] leading-relaxed">{p.desc}</p>
+            </motion.div>
+          ))}
         </div>
+
+        <motion.div
+          custom={3}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={fadeInUp}
+        >
+          <GitHubActivity />
+        </motion.div>
       </div>
     </SectionWrapper>
   );

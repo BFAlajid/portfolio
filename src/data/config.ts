@@ -1,9 +1,9 @@
 const config = {
-  title: "Basil Francis Alajid | Full Stack Developer",
+  title: "Basil Francis Alajid | Full Stack Developer | Enterprise Systems & Test Automation",
   description: {
-    long: "Full Stack Software Engineer specializing in React, TypeScript, Next.js, and enterprise systems.",
+    long: "Full stack developer with 7 years of experience specializing in React, TypeScript, and Next.js. Building enterprise workflow systems, Playwright test automation, and production-grade applications for government and commercial clients.",
     short:
-      "Full Stack Software Engineer. React, TypeScript, Next.js. Open to global remote roles.",
+      "Full Stack Developer | 7 years shipping enterprise systems, test automation, React, TypeScript, Next.js.",
   },
   keywords: [
     "Basil Francis Alajid",

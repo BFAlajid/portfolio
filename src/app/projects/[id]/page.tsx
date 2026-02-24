@@ -63,15 +63,32 @@ export default function CaseStudyPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        {/* Overview */}
+        {/* Problem & Overview */}
         <section className="mb-12">
           <h2 className="text-xl font-display text-[var(--gold)] mb-4">
-            Overview
+            Problem
           </h2>
           <p className="font-mono text-sm leading-relaxed text-foreground/80">
             {study.overview}
           </p>
         </section>
+
+        {/* Constraints */}
+        {study.constraints && study.constraints.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-display text-[var(--gold)] mb-4">
+              Constraints
+            </h2>
+            <ul className="space-y-2">
+              {study.constraints.map((c, i) => (
+                <li key={i} className="flex gap-3 font-mono text-sm text-foreground/80">
+                  <span className="text-[var(--gold)] shrink-0">-</span>
+                  {c}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Architecture */}
         <section className="mb-12">
@@ -83,10 +100,27 @@ export default function CaseStudyPage({ params }: { params: { id: string } }) {
           </p>
         </section>
 
+        {/* Tech Choices */}
+        {study.techChoices && study.techChoices.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-display text-[var(--gold)] mb-6">
+              Tech Choices &amp; Why
+            </h2>
+            <div className="space-y-4">
+              {study.techChoices.map((tc, i) => (
+                <div key={i} className="p-4 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A]">
+                  <p className="font-bold text-sm mb-1">{tc.tech}</p>
+                  <p className="font-mono text-sm text-foreground/70">{tc.reason}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Challenges & Solutions */}
         <section className="mb-12">
           <h2 className="text-xl font-display text-[var(--gold)] mb-6">
-            Challenges & Solutions
+            Challenges &amp; Solutions
           </h2>
           <div className="space-y-6">
             {study.challenges.map((c, i) => (
@@ -114,6 +148,52 @@ export default function CaseStudyPage({ params }: { params: { id: string } }) {
             ))}
           </div>
         </section>
+
+        {/* Trade-offs */}
+        {study.tradeoffs && study.tradeoffs.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-display text-[var(--gold)] mb-4">
+              Trade-offs
+            </h2>
+            <ul className="space-y-2">
+              {study.tradeoffs.map((t, i) => (
+                <li key={i} className="flex gap-3 font-mono text-sm text-foreground/80">
+                  <span className="text-yellow-500/70 shrink-0">~</span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Impact */}
+        {study.impact && (
+          <section className="mb-12">
+            <h2 className="text-xl font-display text-[var(--gold)] mb-4">
+              Impact
+            </h2>
+            <p className="font-mono text-sm leading-relaxed text-foreground/80">
+              {study.impact}
+            </p>
+          </section>
+        )}
+
+        {/* What I'd Improve */}
+        {study.improvements && study.improvements.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-display text-[var(--gold)] mb-4">
+              What I&apos;d Improve
+            </h2>
+            <ul className="space-y-2">
+              {study.improvements.map((imp, i) => (
+                <li key={i} className="flex gap-3 font-mono text-sm text-foreground/80">
+                  <span className="text-[var(--gold)] shrink-0">+</span>
+                  {imp}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Back */}
         <Link

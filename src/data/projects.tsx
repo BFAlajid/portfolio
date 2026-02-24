@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import { RiNextjsFill, RiReactjsFill } from "react-icons/ri";
 import {
+  SiPlaywright,
   SiTailwindcss,
   SiTypescript,
   SiWebassembly,
@@ -123,6 +124,24 @@ const PROJECT_SKILLS = {
     fg: "white",
     icon: <span>🗄️</span>,
   },
+  playwright: {
+    title: "Playwright",
+    bg: "black",
+    fg: "white",
+    icon: <SiPlaywright />,
+  },
+  pega: {
+    title: "Pega Infinity",
+    bg: "black",
+    fg: "white",
+    icon: <span>⚙️</span>,
+  },
+  reactStable: {
+    title: "React",
+    bg: "black",
+    fg: "white",
+    icon: <RiReactjsFill />,
+  },
 };
 export type Project = {
   id: string;
@@ -188,7 +207,7 @@ const projects: Project[] = [
           <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
             <li>Battle engine built as a pure useReducer state machine (deterministic, replay-capable)</li>
             <li>Gen 3 binary save parser: XOR decryption, 24 sub-structure permutations, bit-packed IV extraction</li>
-            <li>Zero backend — all persistence via localStorage and IndexedDB</li>
+            <li>Zero backend, all persistence via localStorage and IndexedDB</li>
           </ul>
 
           <Link href="/projects/professor-basils-lab" className="inline-block mt-6">
@@ -231,6 +250,58 @@ const projects: Project[] = [
           </p>
 
           <Link href="/projects/manila-watch-atelier" className="inline-block mt-6">
+            <Button variant="outline" size="sm" className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono">
+              View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+      );
+    },
+  },
+  {
+    id: "government-case-management",
+    category: "Enterprise System",
+    title: "Government Defense Case Management",
+    src: "/assets/projects-screenshots/case-management/landing.svg",
+    screenshots: [],
+    skills: {
+      frontend: [
+        PROJECT_SKILLS.reactStable,
+        PROJECT_SKILLS.tsStable,
+        PROJECT_SKILLS.playwright,
+        PROJECT_SKILLS.pega,
+      ],
+      backend: [],
+    },
+    live: "",
+    get content() {
+      return (
+        <div>
+          <TypographyP className="font-mono">
+            Enterprise case management platform for a government defense agency
+            serving 500+ internal users. Built the workflow automation layer,
+            form engine, reporting infrastructure, and E2E test automation.
+          </TypographyP>
+
+          <TypographyH3 className="my-4 mt-8">What I Built</TypographyH3>
+          <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
+            <li>Configuration-driven form engine with conditional visibility and cross-field validation</li>
+            <li>SLA-driven case routing with auto-escalation for overdue work items</li>
+            <li>REST integration layer (Connect-REST) with scoped data pages and error handling</li>
+            <li>Reporting infrastructure with dynamic filtering, table joins, and summarization</li>
+            <li>Playwright + CRX E2E test suite that cut QA cycle time by 40%</li>
+          </ul>
+
+          <TypographyH3 className="my-4 mt-8">Tech Stack</TypographyH3>
+          <p className="font-mono mb-2">
+            React, TypeScript, Pega Infinity 24.1, Connect-REST, Playwright, CRX
+          </p>
+
+          <p className="font-mono text-xs text-muted-foreground mt-4 italic">
+            Proprietary enterprise project. No public source code or live demo.
+          </p>
+
+          <Link href="/projects/government-case-management" className="inline-block mt-6">
             <Button variant="outline" size="sm" className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono">
               View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
             </Button>
