@@ -23,7 +23,7 @@ const ExperienceSection = () => {
           id="experience"
           title="Experience"
           desc="Enterprise systems, test automation, and client-facing software."
-          className="mb-12 md:mb-20 mt-0"
+          className="static mb-12 md:mb-20 mt-0"
         />
 
         {isMobile ? (

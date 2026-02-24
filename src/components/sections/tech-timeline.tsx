@@ -57,7 +57,7 @@ const TechTimelineSection = () => {
 
   return (
     <SectionWrapper id="timeline" className="relative z-10 max-w-5xl mx-auto py-20 px-6">
-      <SectionHeader id="timeline" title="Tech Journey" />
+      <SectionHeader id="timeline" title="Tech Journey" className="static mb-0" />
 
       {isMobile ? (
         <MobileTimeline expandedYear={expandedYear} setExpandedYear={setExpandedYear} />

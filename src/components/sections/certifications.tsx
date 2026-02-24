@@ -34,7 +34,7 @@ const CertificationsSection = () => {
           id="certifications"
           title="Certifications"
           desc="Verified credentials."
-          className="mb-12 md:mb-20 mt-0"
+          className="static mb-12 md:mb-20 mt-0"
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
