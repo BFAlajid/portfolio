@@ -3,7 +3,7 @@ import { getBlogPost, getBlogPosts } from "@/lib/mdx";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import ScrollProgress from "@/components/ui/scroll-progress";
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import RevealAnimation from "@/components/reveal-animations";
 import PageTransition from "@/components/page-transition";
@@ -62,6 +62,12 @@ const components = {
 
 export default function BlogPost({ params }: { params: { slug: string } }) {
   const post = getBlogPost(params.slug);
+  const allPosts = getBlogPosts().sort((a, b) =>
+    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
+  );
+  const currentIndex = allPosts.findIndex((p) => p.slug === params.slug);
+  const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+  const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
   return (
     <PageTransition>
@@ -109,6 +115,43 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
             <MDXRemote source={post.content} components={components} />
           </article>
         </RevealAnimation>
+
+        <div className="flex items-center justify-between border-t border-zinc-800 pt-8 mt-12">
+          {prevPost ? (
+            <Link
+              href={`/blogs/${prevPost.slug}`}
+              className="inline-flex items-center gap-2 text-sm font-mono text-zinc-500 hover:text-purple-400 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {prevPost.metadata.title}
+            </Link>
+          ) : (
+            <Link
+              href="/blogs"
+              className="inline-flex items-center gap-2 text-sm font-mono text-zinc-500 hover:text-purple-400 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              All Posts
+            </Link>
+          )}
+          {nextPost ? (
+            <Link
+              href={`/blogs/${nextPost.slug}`}
+              className="inline-flex items-center gap-2 text-sm font-mono text-zinc-500 hover:text-purple-400 transition-colors text-right"
+            >
+              {nextPost.metadata.title}
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <Link
+              href="/blogs"
+              className="inline-flex items-center gap-2 text-sm font-mono text-zinc-500 hover:text-purple-400 transition-colors"
+            >
+              All Posts
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          )}
+        </div>
       </div>
     </div>
     </PageTransition>

@@ -1,8 +1,8 @@
-import { getCaseStudy, getAllCaseStudyIds } from "@/data/case-studies";
+import caseStudies, { getCaseStudy, getAllCaseStudyIds } from "@/data/case-studies";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import PageTransition from "@/components/page-transition";
 
 export async function generateStaticParams() {
@@ -21,6 +21,11 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 export default function CaseStudyPage({ params }: { params: { id: string } }) {
   const study = getCaseStudy(params.id);
   if (!study) notFound();
+
+  const allIds = getAllCaseStudyIds();
+  const currentIndex = allIds.indexOf(params.id);
+  const prevStudy = currentIndex > 0 ? caseStudies[currentIndex - 1] : null;
+  const nextStudy = currentIndex < allIds.length - 1 ? caseStudies[currentIndex + 1] : null;
 
   return (
     <PageTransition>
@@ -195,14 +200,43 @@ export default function CaseStudyPage({ params }: { params: { id: string } }) {
           </section>
         )}
 
-        {/* Back */}
-        <Link
-          href="/#projects"
-          className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-[var(--gold)] transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Projects
-        </Link>
+        {/* Prev / Next */}
+        <div className="flex items-center justify-between border-t border-[#2A2A2A] pt-8">
+          {prevStudy ? (
+            <Link
+              href={`/projects/${prevStudy.projectId}`}
+              className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-[var(--gold)] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {prevStudy.title}
+            </Link>
+          ) : (
+            <Link
+              href="/#projects"
+              className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-[var(--gold)] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              All Projects
+            </Link>
+          )}
+          {nextStudy ? (
+            <Link
+              href={`/projects/${nextStudy.projectId}`}
+              className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-[var(--gold)] transition-colors text-right"
+            >
+              {nextStudy.title}
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <Link
+              href="/#projects"
+              className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-[var(--gold)] transition-colors"
+            >
+              All Projects
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          )}
+        </div>
       </div>
     </main>
     </PageTransition>
