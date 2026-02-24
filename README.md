@@ -40,6 +40,3 @@ All personal data is in 3 files:
 - `src/data/constants.ts` (skills, experience)
 - `src/data/projects.tsx` (portfolio projects)
 
-## Color Theme
-
-Luxury watch aesthetic. Dark background (#0A0A0A) with gold (#C9A84C) accents.
