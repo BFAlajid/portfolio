@@ -43,11 +43,14 @@ function shuffle<T>(arr: T[]): T[] {
 /**
  * Auto-playing BGM that starts on the first user interaction (click/keydown).
  * Shuffles all tracks and loops endlessly. No UI controls — just vibes.
- * Falls back silently if FLAC is unsupported (Safari).
+ * Uses HTMLAudioElement + createMediaElementSource so Safari can decode FLAC
+ * natively while we retain programmatic volume control via GainNode.
  */
 export function useBgm() {
   const [started, setStarted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ctxRef = useRef<AudioContext | null>(null);
+  const gainRef = useRef<GainNode | null>(null);
   const playlistRef = useRef<string[]>([]);
   const indexRef = useRef(0);
 
@@ -62,7 +65,22 @@ export function useBgm() {
 
     if (!audioRef.current) {
       audioRef.current = new Audio();
-      audioRef.current.volume = VOLUME;
+
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        ctxRef.current = ctx;
+
+        const gain = ctx.createGain();
+        gain.gain.value = VOLUME;
+        gain.connect(ctx.destination);
+        gainRef.current = gain;
+
+        const source = ctx.createMediaElementSource(audioRef.current);
+        source.connect(gain);
+      } else {
+        audioRef.current.volume = VOLUME;
+      }
     }
 
     audioRef.current.src = `/music/${track}.flac`;
@@ -114,6 +132,7 @@ export function useBgm() {
         audioRef.current.pause();
         audioRef.current.src = "";
       }
+      ctxRef.current?.close();
     };
   }, []);
 }
