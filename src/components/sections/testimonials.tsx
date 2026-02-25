@@ -11,15 +11,7 @@ type Testimonial = {
   company: string;
 };
 
-// TODO: Replace with real testimonials when available
-const TESTIMONIALS: Testimonial[] = [
-  // {
-  //   quote: "Your testimonial quote here.",
-  //   name: "Person Name",
-  //   title: "Job Title",
-  //   company: "Company Name",
-  // },
-];
+const TESTIMONIALS: Testimonial[] = [];
 
 const TestimonialsSection = () => {
   if (TESTIMONIALS.length === 0) return null;

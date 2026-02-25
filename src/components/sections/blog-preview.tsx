@@ -28,13 +28,20 @@ const BLOG_POSTS = [
     summary:
       "Designing a deterministic, replay-capable battle system using React's useReducer as a pure state machine.",
   },
+  {
+    slug: "achieving-milestone",
+    title: "Building This Portfolio",
+    date: "2026-02-10",
+    summary:
+      "A 3D keyboard, GSAP scroll animations, ambient Pokemon music, and the decisions behind over-engineering a personal site.",
+  },
 ];
 
 const BlogPreviewSection = () => {
   return (
     <SectionWrapper id="blog" className="relative z-10 max-w-7xl mx-auto py-20 px-6">
       <SectionHeader id="blog" title="Latest Writing" className="static mb-0" />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
         {BLOG_POSTS.map((post, i) => (
           <motion.div
             key={post.slug}
