@@ -29,7 +29,8 @@ export default function KeyboardShortcuts() {
         el &&
         (el.tagName === "INPUT" ||
           el.tagName === "TEXTAREA" ||
-          (el as HTMLElement).isContentEditable)
+          (el as HTMLElement).isContentEditable ||
+          (el as HTMLElement).dataset.terminalInput === "true")
       )
         return;
 

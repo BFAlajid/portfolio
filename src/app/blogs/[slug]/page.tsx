@@ -24,38 +24,38 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 const components = {
-  h1: (props: any) => (
+  h1: (props: React.ComponentPropsWithoutRef<"h1">) => (
     <h1 className="text-3xl md:text-5xl font-bold mt-12 mb-6 text-zinc-100" {...props} />
   ),
-  h2: (props: any) => (
+  h2: (props: React.ComponentPropsWithoutRef<"h2">) => (
     <h2 className="text-2xl md:text-3xl font-semibold mt-10 mb-4 text-zinc-200" {...props} />
   ),
-  h3: (props: any) => (
+  h3: (props: React.ComponentPropsWithoutRef<"h3">) => (
     <h3 className="text-xl md:text-2xl font-semibold mt-8 mb-3 text-zinc-300" {...props} />
   ),
-  p: (props: any) => (
+  p: (props: React.ComponentPropsWithoutRef<"p">) => (
     <p className="text-zinc-400 leading-relaxed mb-6 text-lg" {...props} />
   ),
-  ul: (props: any) => (
+  ul: (props: React.ComponentPropsWithoutRef<"ul">) => (
     <ul className="list-disc list-inside mb-6 text-zinc-400 space-y-2" {...props} />
   ),
-  ol: (props: any) => (
+  ol: (props: React.ComponentPropsWithoutRef<"ol">) => (
     <ol className="list-decimal list-inside mb-6 text-zinc-400 space-y-2" {...props} />
   ),
-  li: (props: any) => <li className="ml-4" {...props} />,
-  blockquote: (props: any) => (
+  li: (props: React.ComponentPropsWithoutRef<"li">) => <li className="ml-4" {...props} />,
+  blockquote: (props: React.ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       className="border-l-4 border-purple-500 pl-4 italic text-zinc-400 my-6 bg-zinc-900/50 py-2 pr-4 rounded-r"
       {...props}
     />
   ),
-  code: (props: any) => (
+  code: (props: React.ComponentPropsWithoutRef<"code">) => (
     <code className="bg-zinc-900 text-purple-300 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
   ),
-  pre: (props: any) => (
+  pre: (props: React.ComponentPropsWithoutRef<"pre">) => (
     <pre className="bg-zinc-950 p-4 rounded-lg overflow-x-auto mb-6 border border-zinc-800" {...props} />
   ),
-  a: (props: any) => (
+  a: (props: React.ComponentPropsWithoutRef<"a">) => (
     <a className="text-purple-400 hover:text-purple-300 underline underline-offset-4 transition-colors" {...props} />
   ),
 };

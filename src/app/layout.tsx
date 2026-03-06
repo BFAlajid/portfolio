@@ -44,12 +44,14 @@ export const metadata: Metadata = {
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
 });
 
 const archivoBlack = Archivo_Black({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-display",
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -61,6 +63,45 @@ export default function RootLayout({
     <html lang="en" className={[inter.variable, archivoBlack.variable, "dark", "font-display"].join(" ")} suppressHydrationWarning>
       <head>
         {/* If you are reading this, I probably want to work with you. basilfrancis.alajid@yahoo.com */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  name: config.author,
+                  url: config.site,
+                  description: config.description.short,
+                },
+                {
+                  "@type": "Person",
+                  name: config.author,
+                  url: config.site,
+                  jobTitle: "Full Stack Developer",
+                  worksFor: {
+                    "@type": "Organization",
+                    name: "Accenture",
+                  },
+                  address: {
+                    "@type": "PostalAddress",
+                    addressLocality: "Cebu City",
+                    addressCountry: "PH",
+                  },
+                  sameAs: [
+                    config.social.github,
+                    config.social.linkedin,
+                  ],
+                  knowsAbout: [
+                    "React", "TypeScript", "Next.js", "Node.js",
+                    "Playwright", "Docker", "PostgreSQL", "AWS",
+                  ],
+                },
+              ],
+            }),
+          }}
+        />
         <link rel="preload" href="/assets/skills-keyboard.spline" as="fetch" crossOrigin="anonymous" />
         <script dangerouslySetInnerHTML={{ __html: `
           window.addEventListener('error', function(e) {

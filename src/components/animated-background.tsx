@@ -69,7 +69,8 @@ const AnimatedBackground = () => {
         activeElement &&
         (activeElement.tagName === "INPUT" ||
           activeElement.tagName === "TEXTAREA" ||
-          (activeElement as HTMLElement).isContentEditable)
+          (activeElement as HTMLElement).isContentEditable ||
+          (activeElement as HTMLElement).dataset.terminalInput === "true")
       );
     };
 
@@ -291,7 +292,6 @@ const AnimatedBackground = () => {
 
   useEffect(() => {
     if (!selectedSkill || !splineApp) return;
-    // console.log(selectedSkill)
     splineApp.setVariable("heading", selectedSkill.label);
     splineApp.setVariable("desc", selectedSkill.shortDescription);
   }, [selectedSkill]);
@@ -390,7 +390,7 @@ const AnimatedBackground = () => {
   }, [splineApp, isLoading, activeSection]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="w-full h-full fixed inset-0" />}>
       <Spline
         className={`w-full h-full fixed ${activeSection !== "skills" ? "pointer-events-none" : ""}`}
         ref={splineContainer}
