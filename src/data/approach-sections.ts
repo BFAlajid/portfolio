@@ -58,9 +58,9 @@ export const approachSections: ApproachSection[] = [
         text: "Test contracts, not implementations. E2E tests validate what the user sees and what the API returns. When I refactored the form engine's internal state management, zero E2E tests broke because they never referenced internal state. Tests that break on refactors are tests that are testing the wrong thing.",
       },
       {
-        type: "gap",
-        label: "Gap I'd close",
-        text: "No unit test suite for Professor Basil's Lab yet. The deterministic battle engine is ideal for vitest: pure functions, no mocking needed, reproducible via seeded RNG. This is the highest-value test investment I haven't made yet.",
+        type: "detail",
+        label: "Professor Basil's Lab",
+        text: "Built a 63-test Vitest suite covering the battle engine, damage calculator, type effectiveness, and team validation. Pure functions with deterministic output make these tests fast and reliable — no mocking needed, reproducible via seeded RNG. Next target: expanding coverage to the save file parser and emulator state management.",
       },
     ],
   },

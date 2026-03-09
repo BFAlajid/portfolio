@@ -36,7 +36,7 @@ export const usePreloader = () => {
   }
   return context;
 };
-const LOADING_TIME = 1.2;
+const LOADING_TIME = 0.6;
 function Preloader({ children, disabled = false }: PreloaderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingPercent, setLoadingPercent] = useState(0);
@@ -46,7 +46,6 @@ function Preloader({ children, disabled = false }: PreloaderProps) {
     loadingTween.current?.progress(0.99).kill();
     setLoadingPercent(100);
     setIsLoading(false);
-    // console.log("killed", loadingTween.current);
   };
   const loadingPercentRef = useRef<{ value: number }>({ value: 0 });
   useEffect(() => {

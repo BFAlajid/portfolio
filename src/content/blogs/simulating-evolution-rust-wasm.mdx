@@ -1,0 +1,265 @@
+---
+title: "Simulating Evolution in the Browser with Rust and WebAssembly"
+publishedAt: "2026-03-08"
+summary: "Building a real-time artificial life simulator with neural network brains, closed-energy physics, and emergent speciation — all running at 60fps in a 189KB WASM binary."
+author: "Basil Francis Alajid"
+tags: ["rust", "webassembly", "simulation", "gamedev"]
+image: "/me.jpg"
+---
+
+# Simulating Evolution in 189KB
+
+[Darwin's Sandbox](https://darwins-sandbox.vercel.app) is a real-time evolution simulator. Creatures with neural network brains spawn into a world with finite food, compete for resources, reproduce with genetic mutations, and die when they run out of energy. Natural selection emerges from nothing but physics and hunger.
+
+The entire simulation engine is Rust compiled to WebAssembly — 189KB, running in a Web Worker so it never blocks the UI. The frontend is Next.js with a Canvas 2D renderer. Here's how it works.
+
+## The Closed Energy Budget
+
+The most important design decision in the whole project isn't the neural networks or the physics. It's this: **total energy is conserved**.
+
+Every tick, the world has a target energy level (default 30,000 units). Energy exists in two forms: creature energy and food energy. When a creature eats food, energy transfers — it doesn't appear from nowhere. When a creature dies, its remaining energy dissipates. Food spawns to maintain the budget.
+
+```rust
+let creature_energy: f32 = creatures.values().map(|c| c.energy).sum();
+let food_energy: f32 = food.iter().map(|f| f.energy).sum();
+let current_total = creature_energy + food_energy;
+let deficit = target_total_energy - current_total;
+
+// Spawn food to fill the deficit
+let food_to_spawn = (deficit / food_energy_per_item).max(0.0) as usize;
+```
+
+This creates carrying capacity without hardcoding it. If too many creatures exist, food per capita drops, energy gets scarce, weaker creatures starve. The population self-regulates. Add seasonal variation (`food_multiplier = 1.0 + 0.4 * sin(tick * TAU / 1000)`) and you get boom-bust cycles that pressure the population to adapt.
+
+Every 100 ticks, an energy audit checks drift from the target. If it exceeds 1%, something's wrong in the simulation math.
+
+## Neural Network Brains
+
+Each creature has a 12-input, 8-hidden, 3-output feedforward neural network. 131 total parameters. No backpropagation — weights evolve through mutation and selection.
+
+### The 12 Inputs
+
+The creature perceives the world through a 120-degree forward vision cone:
+
+| Input | What it sees |
+|-------|-------------|
+| 0 | Distance to nearest food (inverse, so closer = higher signal) |
+| 1 | Angle to nearest food relative to forward facing |
+| 2-3 | Food count in left/right 60° sectors |
+| 4 | Distance to nearest creature |
+| 5 | Angle to nearest creature |
+| 6 | Relative size of nearest creature |
+| 7 | Relative speed of nearest creature |
+| 8 | Own energy level |
+| 9 | Own current speed |
+| 10 | Own size |
+| 11 | Random noise (symmetry breaker) |
+
+The vision cone matters. Creatures can't see behind them, which means they evolve scanning behaviors — oscillating their heading to sweep the cone across the environment. Ambush strategies become possible because approach from behind is invisible.
+
+Left/right food sector counts are especially interesting. Instead of just chasing the nearest food, creatures can learn to steer toward areas with higher food density. This produces foraging strategies that go beyond simple gradient following.
+
+### The 3 Outputs
+
+| Output | Control |
+|--------|---------|
+| 0 | Turn angle (±π/4 radians) |
+| 1 | Thrust magnitude (0 to max) |
+| 2 | Reproduce signal (thresholded at 0.5) |
+
+Output 2 is gated — even if the network fires the reproduce signal, the creature must also be mature (40+ ticks old), have enough energy (140+), and be past its cooldown period (120 ticks). This prevents neural network spam-reproduction from being a viable strategy.
+
+### Deterministic Activation
+
+Here's where it gets interesting. The standard `tanh` function uses transcendental math that can produce slightly different results across browser engines (V8 vs SpiderMonkey vs JavaScriptCore). For a simulation that needs to be deterministic given a seed, that's unacceptable.
+
+So the activation function is a polynomial approximation:
+
+```rust
+fn fast_tanh(x: f32) -> f32 {
+    let x2 = x * x;
+    x * (27.0 + x2) / (27.0 + 9.0 * x2)
+}
+```
+
+Maximum error of ~0.004. Uses only `+`, `-`, `*`, `/` — operations that are bit-identical across all WASM engines. Same seed, same simulation, same result. Every time.
+
+## Momentum Physics
+
+Creatures don't teleport. They have mass, velocity, and drag.
+
+```rust
+// Mass scales with area (2D)
+let mass = creature.size_trait * creature.size_trait;
+
+// Thrust scales with cross-section (allometric)
+let max_thrust = creature.size_trait.powf(1.5);
+
+// Apply thrust in facing direction
+let ax = thrust * creature.rotation.cos() / mass;
+let ay = thrust * creature.rotation.sin() / mass;
+
+// Integrate with drag
+creature.vx = (creature.vx + ax) * (1.0 - DRAG);  // drag = 0.08
+creature.vy = (creature.vy + ay) * (1.0 - DRAG);
+
+// Integrate position (toroidal)
+creature.x = (creature.x + creature.vx).rem_euclid(world_width);
+creature.y = (creature.y + creature.vy).rem_euclid(world_height);
+```
+
+The allometric scaling is key: `max_thrust = size^1.5` but `mass = size^2`, so effective acceleration scales as `size^-0.5`. Bigger creatures are stronger but slower to accelerate. Smaller creatures are nimble but weaker. This creates a real size-speed tradeoff that evolution can optimize across.
+
+Energy cost is proportional to `speed² * mass` — moving fast is expensive, especially if you're big. Basal metabolic cost increases with age (senescence), so old creatures gradually become less efficient even if they've found a good strategy.
+
+## Spatial Hashing: Zero-Allocation Neighbor Queries
+
+With 1,000+ creatures needing to check neighbors every tick, brute-force O(n²) distance checks are too slow. The spatial hash uses a two-pass counting approach:
+
+```rust
+pub fn rebuild(&mut self, creatures: &DenseSlotMap<CreatureKey, Creature>) {
+    // Pass 1: Count entities per cell
+    self.counts.fill(0);
+    for creature in creatures.values() {
+        let cell = self.cell_index(creature.x, creature.y);
+        self.counts[cell] += 1;
+    }
+
+    // Prefix-sum to compute offsets
+    let mut offset = 0;
+    for i in 0..self.counts.len() {
+        self.offsets[i] = offset;
+        self.cursors[i] = offset;
+        offset += self.counts[i];
+    }
+
+    // Pass 2: Place entities contiguously
+    for (key, creature) in creatures.iter() {
+        let cell = self.cell_index(creature.x, creature.y);
+        let idx = self.cursors[cell] as usize;
+        self.entries[idx] = key;
+        self.cursors[cell] += 1;
+    }
+}
+```
+
+No `Vec::push`, no allocation, no hash maps. The entries array is pre-allocated once and reused every tick. Cell size equals max vision range, so neighbor queries check at most a 3x3 grid of cells. Toroidal wrapping is handled in the grid indexing.
+
+This takes 50-100μs for 1,000 creatures. The entire tick (physics + NN + energy + reproduction + rendering) is 1-2ms.
+
+## Mutation and Speciation
+
+Offspring inherit their parent's neural network weights with mutations. The mutation algorithm combines two distributions:
+
+- **90% Gaussian** — small perturbations around the parent's strategy
+- **10% Cauchy (heavy-tailed)** — occasional large jumps that explore distant strategy space
+
+```rust
+let delta = if rng.gen::<f32>() < cauchy_probability {
+    // Cauchy: heavy tail, enables large evolutionary leaps
+    let u = rng.gen_range(0.01..0.99);
+    (std::f32::consts::PI * (u - 0.5)).tan() * scale * strength * 3.0
+} else {
+    // Gaussian: fine-tuning around parent
+    normal.sample(rng) * scale * strength
+};
+```
+
+The mutation rate itself is heritable. It evolves using log-normal adaptation:
+
+```rust
+new_rate = parent_rate * exp(tau * N(0,1))  // tau ≈ 0.062
+```
+
+This prevents the population from getting stuck: if the environment changes (seasonal shift, catastrophe), lineages with higher mutation rates adapt faster and outcompete the conservative ones.
+
+Species are tracked using distance-based genomic clustering — 30% trait distance + 70% brain weight L1 distance. Species get auto-generated Latin-ish names from phoneme tables ("Primordius vitas", "Noctus fauna") and colorblind-safe palette colors.
+
+## Web Worker Architecture
+
+The simulation runs entirely in a Web Worker. The main thread never touches WASM.
+
+```
+Main Thread                    Web Worker
+┌──────────┐  postMessage     ┌──────────────────┐
+│  React   │ ───────────────→ │ WASM Simulation  │
+│  Canvas  │                  │ Time-budgeted    │
+│  Zustand │ ←─────────────── │ tick loop        │
+└──────────┘  transferable    └──────────────────┘
+              ArrayBuffer
+```
+
+The worker runs a time-budgeted loop: execute as many simulation ticks as fit within 14ms (one frame at 60fps), then pack the render buffer and send it to the main thread:
+
+```typescript
+function runLoop(ticksPerFrame: number) {
+  const start = performance.now();
+  let ticksDone = 0;
+
+  while (ticksDone < ticksPerFrame && (performance.now() - start) < TICK_BUDGET_MS) {
+    sim.step();
+    ticksDone++;
+  }
+
+  // Pack and transfer — zero-copy via transferable ArrayBuffers
+  const creatureBuffer = new ArrayBuffer(creatureData.byteLength);
+  new Float32Array(creatureBuffer).set(creatureData);
+  postMessage(
+    { type: 'frame', creatureBuffer, foodBuffer, stats },
+    [creatureBuffer, foodBuffer]  // ownership transfer, no copy
+  );
+}
+```
+
+The render buffer is a flat `Float32Array` — 12 floats per creature (x, y, rotation, size, energy, rgb, velocity, age, species_id), pre-sorted by species_id in the Rust code for Canvas path batching.
+
+Stats updates are throttled to 5Hz in Zustand. Render data lives in `useRef`, never in React state — putting `Float32Array` buffers in state would trigger re-renders 60 times per second.
+
+## Canvas Rendering with LOD
+
+The renderer adjusts detail level based on camera zoom:
+
+| Zoom Level | LOD | What's Drawn |
+|-----------|-----|-------------|
+| < 0.15 | 0 | 4×4 pixel dots |
+| 0.15 - 0.5 | 1 | Simple triangles |
+| 0.5 - 2.0 | 2 | Detailed triangles + energy bars |
+| > 2.0 | 3 | Full detail + eyes |
+
+Because the render buffer is pre-sorted by species, the renderer can batch all creatures of the same species into a single `Path2D` and call `fill()` once. With 5 species and 1,000 creatures, that's 5 draw calls instead of 1,000.
+
+```typescript
+let currentSpecies = -1;
+let path = new Path2D();
+
+for (let i = 0; i < creatureCount; i++) {
+  const speciesId = creatureData[i * 12 + 11];
+
+  if (speciesId !== currentSpecies) {
+    if (currentColor) {
+      ctx.fillStyle = currentColor;
+      ctx.fill(path);  // One draw call per species
+    }
+    path = new Path2D();
+    currentSpecies = speciesId;
+  }
+
+  drawTriangle(path, x, y, rotation, size);
+}
+```
+
+Energy is visualized through brightness — well-fed creatures glow, starving ones dim. At LOD 2+, a colored health bar appears under each creature (green → yellow → red).
+
+## What Emerges
+
+With no hand-coded behaviors, creatures evolve:
+
+- **Foraging patterns** — scanning vision cone left-right to sweep for food
+- **Size specialization** — some lineages evolve small/fast, others large/slow
+- **Energy conservation** — coasting with low thrust when food is nearby
+- **Seasonal adaptation** — lineages with higher mutation rates survive bust cycles
+- **Territorial drift** — species cluster in regions based on initial food distribution
+
+The closed energy budget is what makes all of this work. Without it, the population would explode, resources would be infinite, and there'd be no selection pressure. Conservation creates scarcity, scarcity creates competition, competition creates evolution.
+
+The whole thing is [live on Vercel](https://darwins-sandbox.vercel.app) and [open source](https://github.com/BFAlajid/darwins-sandbox). ~2,000 lines of Rust, ~1,500 lines of TypeScript, 189KB WASM binary.

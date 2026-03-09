@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <rect width="600" height="400" fill="#0A0A0A"/>
+
+  <!-- Grid pattern -->
+  <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1A1A1A" stroke-width="0.5"/>
+  </pattern>
+  <rect width="600" height="400" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="300" y="45" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="14" font-weight="bold">DARWIN'S SANDBOX</text>
+  <text x="300" y="65" text-anchor="middle" fill="#666" font-family="monospace" font-size="10">Real-time Evolution Simulator | Rust/WASM + Next.js</text>
+
+  <!-- Simulation canvas area -->
+  <rect x="60" y="85" width="340" height="230" rx="8" fill="#111111" stroke="#2A2A2A" stroke-width="1"/>
+
+  <!-- Creature dots simulating the canvas -->
+  <circle cx="120" cy="150" r="4" fill="#C9A84C" opacity="0.9"/>
+  <circle cx="180" cy="130" r="3" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="250" cy="180" r="5" fill="#C9A84C" opacity="0.8"/>
+  <circle cx="310" cy="140" r="3" fill="#D4B86A" opacity="0.6"/>
+  <circle cx="150" cy="220" r="4" fill="#D4B86A" opacity="0.7"/>
+  <circle cx="220" cy="250" r="3" fill="#8B7635" opacity="0.5"/>
+  <circle cx="340" cy="200" r="4" fill="#C9A84C" opacity="0.8"/>
+  <circle cx="280" cy="260" r="3" fill="#D4B86A" opacity="0.6"/>
+  <circle cx="100" cy="280" r="5" fill="#C9A84C" opacity="0.9"/>
+  <circle cx="350" cy="270" r="3" fill="#8B7635" opacity="0.5"/>
+
+  <!-- Food particles -->
+  <circle cx="140" cy="170" r="2" fill="#27C93F" opacity="0.6"/>
+  <circle cx="260" cy="210" r="2" fill="#27C93F" opacity="0.5"/>
+  <circle cx="320" cy="160" r="2" fill="#27C93F" opacity="0.7"/>
+  <circle cx="190" cy="270" r="2" fill="#27C93F" opacity="0.4"/>
+  <circle cx="370" cy="240" r="2" fill="#27C93F" opacity="0.6"/>
+
+  <!-- Stats panel -->
+  <rect x="420" y="85" width="120" height="230" rx="8" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="1"/>
+  <text x="480" y="110" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="9" font-weight="bold">STATS</text>
+
+  <text x="435" y="135" fill="#666" font-family="monospace" font-size="8">Population</text>
+  <text x="435" y="150" fill="#C9A84C" font-family="monospace" font-size="11">127</text>
+
+  <text x="435" y="175" fill="#666" font-family="monospace" font-size="8">Species</text>
+  <text x="435" y="190" fill="#C9A84C" font-family="monospace" font-size="11">4</text>
+
+  <text x="435" y="215" fill="#666" font-family="monospace" font-size="8">Generation</text>
+  <text x="435" y="230" fill="#C9A84C" font-family="monospace" font-size="11">42</text>
+
+  <text x="435" y="255" fill="#666" font-family="monospace" font-size="8">Energy</text>
+  <text x="435" y="270" fill="#C9A84C" font-family="monospace" font-size="11">100%</text>
+
+  <text x="435" y="295" fill="#666" font-family="monospace" font-size="8">FPS</text>
+  <text x="435" y="310" fill="#27C93F" font-family="monospace" font-size="11">60</text>
+
+  <!-- Bottom bar -->
+  <rect x="60" y="335" width="480" height="35" rx="6" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="0.5"/>
+  <text x="150" y="357" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">Neural Nets</text>
+  <text x="300" y="357" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">156KB WASM</text>
+  <text x="450" y="357" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">60fps Canvas</text>
+</svg>

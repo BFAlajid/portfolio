@@ -1,19 +1,23 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import SmoothScroll from "@/components/smooth-scroll";
 import { cn } from "@/lib/utils";
 import AnimatedBackground from "@/components/animated-background";
 import HeroSection from "@/components/sections/hero";
-import AboutSection from "@/components/sections/about";
-import EngineeringDepthSection from "@/components/sections/engineering-depth";
-import SkillsSection from "@/components/sections/skills";
-import TechTimelineSection from "@/components/sections/tech-timeline";
-import ExperienceSection from "@/components/sections/experience";
-import ProjectsSection from "@/components/sections/projects";
-import CertificationsSection from "@/components/sections/certifications";
-import BlogPreviewSection from "@/components/sections/blog-preview";
-import ContactSection from "@/components/sections/contact";
+
+const AboutSection = dynamic(() => import("@/components/sections/about"));
+const EngineeringDepthSection = dynamic(() => import("@/components/sections/engineering-depth"));
+const SkillsSection = dynamic(() => import("@/components/sections/skills"));
+const TechTimelineSection = dynamic(() => import("@/components/sections/tech-timeline"));
+const ExperienceSection = dynamic(() => import("@/components/sections/experience"));
+const ProjectsSection = dynamic(() => import("@/components/sections/projects"));
+const CertificationsSection = dynamic(() => import("@/components/sections/certifications"));
+const BlogPreviewSection = dynamic(() => import("@/components/sections/blog-preview"));
+const BuildingSection = dynamic(() => import("@/components/sections/building"));
+const InteractiveTerminalSection = dynamic(() => import("@/components/sections/interactive-terminal"));
+const ContactSection = dynamic(() => import("@/components/sections/contact"));
 
 function MainPage() {
   return (
@@ -29,6 +33,8 @@ function MainPage() {
         <ProjectsSection />
         <CertificationsSection />
         <BlogPreviewSection />
+        <BuildingSection />
+        <InteractiveTerminalSection />
         <ContactSection />
       </main>
     </SmoothScroll>

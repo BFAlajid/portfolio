@@ -68,9 +68,9 @@ const HeroSection = () => {
             "pt-28 sm:pb-16 md:p-20 lg:p-24 xl:p-28",
           )}
         >
-          <div className={cn("flex flex-col transition-opacity duration-500", isLoading ? "opacity-0" : "opacity-100")}>
+          <div className="flex flex-col">
               <div>
-                <BlurIn delay={1}>
+                <BlurIn delay={0.2}>
                   <h1
                     className={cn(
                       "-ml-[6px] leading-none font-thin text-transparent text-slate-800 text-left",
@@ -86,7 +86,7 @@ const HeroSection = () => {
                   </h1>
                 </BlurIn>
 
-                <BlurIn delay={1.2}>
+                <BlurIn delay={0.4}>
                   <p
                     className={cn(
                       "md:self-start md:mt-4 font-thin text-md text-slate-500 dark:text-zinc-400",
@@ -99,7 +99,7 @@ const HeroSection = () => {
               </div>
 
               {/* Impact Stats */}
-              <BlurIn delay={1.5}>
+              <BlurIn delay={0.6}>
                 <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-mono">
                   <div className="flex items-center gap-2">
                     <span className="text-[var(--gold)] font-bold text-lg">
@@ -133,21 +133,23 @@ const HeroSection = () => {
                       years shipping production code
                     </span>
                   </div>
-                  {repoCount !== null && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-[var(--gold)] font-bold text-lg">
-                        {repoCount}
-                      </span>
-                      <span className="text-slate-500 dark:text-zinc-500">
-                        public repos
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2 min-w-[120px]">
+                    {repoCount !== null && (
+                      <>
+                        <span className="text-[var(--gold)] font-bold text-lg">
+                          {repoCount}
+                        </span>
+                        <span className="text-slate-500 dark:text-zinc-500">
+                          public repos
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </BlurIn>
 
               {/* Currently Block */}
-              <BlurIn delay={1.8}>
+              <BlurIn delay={0.8}>
                 <div className="mt-5 px-4 py-3 rounded-lg bg-white/5 dark:bg-white/[0.03] border border-slate-200 dark:border-zinc-800/50 backdrop-blur-sm">
                   <p className="text-xs font-mono text-[var(--gold)] tracking-widest uppercase mb-2">
                     Currently
@@ -167,23 +169,21 @@ const HeroSection = () => {
                     className="flex-1"
                     onClick={handleResumeClick}
                   >
-                    <BoxReveal delay={2} width="100%">
+                    <BoxReveal delay={1} width="100%">
                       <Button className="flex items-center gap-2 w-full bg-[var(--gold)] hover:bg-[var(--gold-light)] text-black font-semibold">
                         <File size={24} />
                         <p>Resume</p>
                       </Button>
                     </BoxReveal>
                   </Link>
-                  {downloadCount !== null && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 2.5, duration: 0.5 }}
-                      className="text-xs text-[#A0A0A0] font-mono mt-1 text-center"
-                    >
-                      Downloaded {downloadCount} times
-                    </motion.p>
-                  )}
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: downloadCount !== null ? 1 : 0 }}
+                    transition={{ delay: 1.2, duration: 0.5 }}
+                    className="text-xs text-[#A0A0A0] font-mono mt-1 text-center h-4"
+                  >
+                    {downloadCount !== null ? `Downloaded ${downloadCount} times` : "\u00A0"}
+                  </motion.p>
                 </div>
                 <div className="md:self-start flex gap-3">
                   <Tooltip delayDuration={300}>
