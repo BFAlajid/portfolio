@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <rect width="600" height="400" fill="#0A0A0A"/>
+
+  <!-- Grid pattern -->
+  <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1A1A1A" stroke-width="0.5"/>
+  </pattern>
+  <rect width="600" height="400" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="300" y="45" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="14" font-weight="bold">DEV-SAVESTATE</text>
+  <text x="300" y="65" text-anchor="middle" fill="#666" font-family="monospace" font-size="10">Snapshot &amp; Restore Your Dev Environment</text>
+
+  <!-- Terminal window -->
+  <rect x="60" y="85" width="480" height="240" rx="8" fill="#111111" stroke="#2A2A2A" stroke-width="1"/>
+  <circle cx="82" cy="103" r="5" fill="#FF5F56"/>
+  <circle cx="98" cy="103" r="5" fill="#FFBD2E"/>
+  <circle cx="114" cy="103" r="5" fill="#27C93F"/>
+
+  <!-- Save state visualization -->
+  <text x="80" y="135" fill="#C9A84C" font-family="monospace" font-size="10">$ dev-savestate save "pre-refactor"</text>
+  <text x="80" y="155" fill="#27C93F" font-family="monospace" font-size="9">✓ Captured state snapshot</text>
+
+  <!-- State slots -->
+  <rect x="90" y="170" width="200" height="30" rx="4" fill="#1A1A1A" stroke="#C9A84C" stroke-width="1"/>
+  <text x="100" y="189" fill="#C9A84C" font-family="monospace" font-size="9">SLOT 1</text>
+  <text x="200" y="189" fill="#888" font-family="monospace" font-size="8">pre-refactor</text>
+
+  <rect x="90" y="208" width="200" height="30" rx="4" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="1"/>
+  <text x="100" y="227" fill="#666" font-family="monospace" font-size="9">SLOT 2</text>
+  <text x="200" y="227" fill="#888" font-family="monospace" font-size="8">feature-auth</text>
+
+  <rect x="90" y="246" width="200" height="30" rx="4" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="1"/>
+  <text x="100" y="265" fill="#666" font-family="monospace" font-size="9">SLOT 3</text>
+  <text x="200" y="265" fill="#888" font-family="monospace" font-size="8">stable-main</text>
+
+  <!-- Right panel - what's captured -->
+  <rect x="320" y="170" width="200" height="106" rx="4" fill="#0D0D0D" stroke="#2A2A2A" stroke-width="0.5"/>
+  <text x="335" y="190" fill="#C9A84C" font-family="monospace" font-size="9" font-weight="bold">CAPTURED:</text>
+  <text x="335" y="210" fill="#888" font-family="monospace" font-size="8">▸ Git branch + stash</text>
+  <text x="335" y="225" fill="#888" font-family="monospace" font-size="8">▸ Running processes</text>
+  <text x="335" y="240" fill="#888" font-family="monospace" font-size="8">▸ Env variables</text>
+  <text x="335" y="255" fill="#888" font-family="monospace" font-size="8">▸ Open editor state</text>
+  <text x="335" y="270" fill="#888" font-family="monospace" font-size="8">▸ Docker containers</text>
+
+  <text x="80" y="300" fill="#C9A84C" font-family="monospace" font-size="10">$ dev-savestate restore "pre-refactor"</text>
+  <text x="80" y="315" fill="#27C93F" font-family="monospace" font-size="9">✓ Environment restored in 1.2s</text>
+
+  <!-- Bottom bar -->
+  <rect x="60" y="340" width="480" height="35" rx="6" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="0.5"/>
+  <text x="150" y="362" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">Save / Restore</text>
+  <text x="300" y="362" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">Named Slots</text>
+  <text x="450" y="362" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">Instant Switch</text>
+</svg>

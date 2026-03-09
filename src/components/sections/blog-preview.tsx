@@ -8,6 +8,34 @@ import SectionWrapper from "../ui/section-wrapper";
 
 const BLOG_POSTS = [
   {
+    slug: "pokopia-review",
+    title: "Pokemon Pokopia is the Best Pokemon Game in Years",
+    date: "2026-03-09",
+    summary:
+      "A Ditto rebuilds post-apocalyptic Kanto with crafting, terraforming, and cozy vibes. Pokopia is the freshest thing to happen to the franchise since Legends Arceus.",
+  },
+  {
+    slug: "simulating-evolution-rust-wasm",
+    title: "Simulating Evolution in the Browser with Rust and WebAssembly",
+    date: "2026-03-08",
+    summary:
+      "Building a real-time artificial life simulator with neural network brains, closed-energy physics, and emergent speciation — all running at 60fps in a 189KB WASM binary.",
+  },
+  {
+    slug: "why-npm-audit-is-broken",
+    title: "Why npm audit Is Broken (And How I Fixed It)",
+    date: "2026-03-05",
+    summary:
+      "npm audit floods you with noise. auditfix replaces it with production reachability analysis, EPSS exploit scoring, and supply chain intelligence — so you only fix what matters.",
+  },
+  {
+    slug: "frlg-switch-port",
+    title: "FireRed and LeafGreen Are on Switch and I Have Thoughts",
+    date: "2026-03-02",
+    summary:
+      "The GBA classics hit Switch on February 27 for $20. No online trading, no HOME support at launch, local wireless only. Here's what that means and why I'm still playing it at 2am.",
+  },
+  {
     slug: "gen3-save-parser",
     title: "How I Built a Gen 3 Save Parser in the Browser",
     date: "2026-02-20",
@@ -42,7 +70,7 @@ const BlogPreviewSection = () => {
     <SectionWrapper id="blog" className="relative z-10 max-w-7xl mx-auto py-20 px-6">
       <SectionHeader id="blog" title="Latest Writing" className="static mb-0" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-        {BLOG_POSTS.map((post, i) => (
+        {BLOG_POSTS.slice(0, 4).map((post, i) => (
           <motion.div
             key={post.slug}
             initial={{ opacity: 0, y: 30 }}

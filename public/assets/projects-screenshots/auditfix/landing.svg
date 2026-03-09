@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <rect width="600" height="400" fill="#0A0A0A"/>
+
+  <!-- Grid pattern -->
+  <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1A1A1A" stroke-width="0.5"/>
+  </pattern>
+  <rect width="600" height="400" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="300" y="45" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="14" font-weight="bold">AUDITFIX</text>
+  <text x="300" y="65" text-anchor="middle" fill="#666" font-family="monospace" font-size="10">Smarter npm dependency security CLI</text>
+
+  <!-- Terminal window -->
+  <rect x="60" y="90" width="480" height="230" rx="8" fill="#111111" stroke="#2A2A2A" stroke-width="1"/>
+  <circle cx="82" cy="108" r="5" fill="#FF5F56"/>
+  <circle cx="98" cy="108" r="5" fill="#FFBD2E"/>
+  <circle cx="114" cy="108" r="5" fill="#27C93F"/>
+
+  <!-- Terminal output -->
+  <text x="80" y="140" fill="#C9A84C" font-family="monospace" font-size="10">$ auditfix v2.0.0 — scanned 847 packages</text>
+
+  <text x="80" y="165" fill="#FF5F56" font-family="monospace" font-size="10" font-weight="bold">CRITICAL (1)</text>
+  <text x="95" y="180" fill="#888" font-family="monospace" font-size="9">lodash@4.17.20 — Prototype Pollution</text>
+  <text x="95" y="193" fill="#666" font-family="monospace" font-size="8">Production: YES | EPSS: 0.87 | Fix: 4.17.21</text>
+
+  <text x="80" y="218" fill="#FFBD2E" font-family="monospace" font-size="10" font-weight="bold">HIGH (2)</text>
+  <text x="95" y="233" fill="#888" font-family="monospace" font-size="9">express@4.17.1 — Open redirect</text>
+  <text x="95" y="246" fill="#666" font-family="monospace" font-size="8">Production: YES | EPSS: 0.34 | Fix: 4.19.2</text>
+
+  <text x="80" y="271" fill="#27C93F" font-family="monospace" font-size="10" font-weight="bold">LOW (1)</text>
+  <text x="95" y="286" fill="#888" font-family="monospace" font-size="9">semver@5.7.1 — ReDoS (dev-only)</text>
+  <text x="95" y="299" fill="#666" font-family="monospace" font-size="8">Production: NO | EPSS: 0.02 | Low risk</text>
+
+  <!-- Stats bar -->
+  <rect x="60" y="340" width="480" height="35" rx="6" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="0.5"/>
+  <text x="150" y="362" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">EPSS + CISA KEV</text>
+  <text x="300" y="362" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">Supply Chain</text>
+  <text x="450" y="362" text-anchor="middle" fill="#C9A84C" font-family="monospace" font-size="10">Safe Auto-fix</text>
+</svg>

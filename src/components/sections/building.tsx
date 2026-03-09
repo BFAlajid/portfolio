@@ -33,13 +33,23 @@ const PROJECTS: BuildProject[] = [
   },
   {
     name: "Darwin's Sandbox",
+    repo: "BFAlajid/darwins-sandbox",
     description:
-      "Real-time evolution simulator — creatures with neural network brains compete, mutate, and undergo natural selection in the browser.",
-    stack: ["Rust/WASM", "Next.js", "TypeScript", "Canvas API"],
-    status: "starting-soon",
+      "Real-time evolution simulator — creatures with neural network brains compete, mutate, and undergo natural selection in the browser. 189KB WASM binary running at 60fps.",
+    stack: ["Rust/WASM", "Next.js", "TypeScript", "Canvas API", "Zustand"],
+    status: "active",
+  },
+  {
+    name: "auditfix",
+    repo: "BFAlajid/auditfix",
+    description:
+      "Smarter npm audit replacement with production reachability analysis, EPSS exploit scoring, supply chain scanning, and auto-fix. Cuts 60-70% of npm audit noise.",
+    stack: ["TypeScript", "Node.js", "OSV.dev", "EPSS", "CLI"],
+    status: "active",
   },
   {
     name: "Playwright Archaeologist",
+    repo: "BFAlajid/playwright-archaeologist",
     description:
       "Point at a running web app, get a complete behavioral spec — sitemap, form catalog, API map, user flow graph, screenshot atlas, and regression baseline. Runtime documentation, not source analysis.",
     stack: ["TypeScript", "Playwright", "Node.js", "CLI"],
@@ -47,6 +57,7 @@ const PROJECTS: BuildProject[] = [
   },
   {
     name: "Dev Savestate",
+    repo: "BFAlajid/dev-savestate",
     description:
       "Emulator save states for dev environments — one command captures git state, open files, cursor positions, running processes, and a context note. One command restores everything. CLI + VS Code extension.",
     stack: ["TypeScript", "Node.js", "VS Code Extension API", "CLI"],

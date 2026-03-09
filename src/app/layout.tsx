@@ -102,7 +102,6 @@ export default function RootLayout({
             }),
           }}
         />
-        <link rel="preload" href="/assets/skills-keyboard.spline" as="fetch" crossOrigin="anonymous" />
         <script dangerouslySetInnerHTML={{ __html: `
           window.addEventListener('error', function(e) {
             if (e.message && (e.message.includes('ChunkLoadError') || e.message.includes('Loading chunk'))) {

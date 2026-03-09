@@ -1,6 +1,7 @@
-import React, { Suspense } from "react";
-import Spline from "@splinetool/react-spline";
+import React, { Suspense, lazy } from "react";
 import Link from "next/link";
+
+const Spline = lazy(() => import("@splinetool/react-spline"));
 
 const NotFoundPage = () => {
   return (

@@ -25,6 +25,9 @@ function getLanguageColor(lang: string): string {
     CSS: "#563d7c",
     HTML: "#e34c26",
     Python: "#3572A5",
+    Rust: "#dea584",
+    SCSS: "#c6538c",
+    Shell: "#89e051",
   };
   return colors[lang] || "#C9A84C";
 }
@@ -42,7 +45,7 @@ export default function GitHubProgressTracker({
   useEffect(() => {
     async function fetchStats() {
       try {
-        // Check cache
+        // Check localStorage cache
         const cached = localStorage.getItem(getCacheKey(repo));
         if (cached) {
           const { data, timestamp } = JSON.parse(cached);
@@ -52,33 +55,11 @@ export default function GitHubProgressTracker({
           }
         }
 
-        const [repoRes, commitsRes, langsRes] = await Promise.all([
-          fetch(`https://api.github.com/repos/${repo}`),
-          fetch(`https://api.github.com/repos/${repo}/commits?per_page=5`),
-          fetch(`https://api.github.com/repos/${repo}/languages`),
-        ]);
+        // Single request to our server-side proxy instead of 3 direct GitHub calls
+        const res = await fetch(`/api/github-stats?repo=${encodeURIComponent(repo)}`);
+        if (!res.ok) throw new Error("Failed to fetch stats");
 
-        if (!repoRes.ok) throw new Error("Failed to fetch repo");
-
-        const repoData = await repoRes.json();
-        const commitsData = await commitsRes.json();
-        const langsData = await langsRes.json();
-
-        const data: RepoStats = {
-          totalCommits: Array.isArray(commitsData) ? commitsData.length : 0,
-          openIssues: repoData.open_issues_count ?? 0,
-          stars: repoData.stargazers_count ?? 0,
-          forks: repoData.forks_count ?? 0,
-          lastPush: repoData.pushed_at ?? "",
-          recentCommits: Array.isArray(commitsData)
-            ? commitsData.map((c: { commit?: { message?: string; author?: { date?: string } }; sha?: string }) => ({
-                message: c.commit?.message?.split("\n")[0] ?? "",
-                date: c.commit?.author?.date ?? "",
-                sha: c.sha?.slice(0, 7) ?? "",
-              }))
-            : [],
-          languages: langsData ?? {},
-        };
+        const data: RepoStats = await res.json();
 
         localStorage.setItem(
           getCacheKey(repo),
@@ -93,7 +74,15 @@ export default function GitHubProgressTracker({
     fetchStats();
   }, [repo]);
 
-  if (error) return null;
+  if (error) {
+    return (
+      <div className="mt-8 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A]/80 p-6">
+        <p className="text-xs font-mono text-muted-foreground text-center">
+          {repoName ? `${repoName} — ` : ""}Repository data unavailable. Check back soon.
+        </p>
+      </div>
+    );
+  }
 
   if (!stats) {
     return (
@@ -151,7 +140,7 @@ export default function GitHubProgressTracker({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <StatCard
           icon={<GitCommit className="w-4 h-4" />}
-          label="Commits"
+          label="Recent Commits"
           value={stats.totalCommits.toString()}
         />
         <StatCard

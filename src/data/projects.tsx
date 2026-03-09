@@ -6,10 +6,12 @@ import { ReactNode } from "react";
 import { RiNextjsFill, RiReactjsFill } from "react-icons/ri";
 import {
   SiPlaywright,
+  SiRust,
   SiTailwindcss,
   SiTypescript,
   SiWebassembly,
 } from "react-icons/si";
+import { FaNodeJs } from "react-icons/fa";
 import { TbBrandFramerMotion } from "react-icons/tb";
 
 const ProjectsLinks = ({ live, repo }: { live: string; repo?: string }) => {
@@ -142,6 +144,24 @@ const PROJECT_SKILLS = {
     fg: "white",
     icon: <RiReactjsFill />,
   },
+  rust: {
+    title: "Rust",
+    bg: "black",
+    fg: "white",
+    icon: <SiRust />,
+  },
+  node: {
+    title: "Node.js",
+    bg: "black",
+    fg: "white",
+    icon: <FaNodeJs />,
+  },
+  zustand: {
+    title: "Zustand",
+    bg: "black",
+    fg: "white",
+    icon: <span>🐻</span>,
+  },
 };
 export type Project = {
   id: string;
@@ -173,7 +193,9 @@ const projects: Project[] = [
         PROJECT_SKILLS.pokeapi,
         PROJECT_SKILLS.indexeddb,
       ],
-      backend: [],
+      backend: [
+        PROJECT_SKILLS.rust,
+      ],
     },
     live: "",
     github: "https://github.com/BFAlajid/professor-basils-lab",
@@ -181,9 +203,10 @@ const projects: Project[] = [
       return (
         <div>
           <TypographyP className="font-mono">
-            An entirely client-side Pokemon platform featuring a team builder,
-            turn-based battle simulator, wild encounter system, and a GBA
-            emulator powered by mGBA compiled to WebAssembly.
+            An entirely client-side Pokemon platform with all 1,025 Pokemon —
+            team builder, battle simulator, wild encounters, GBA emulator
+            (mGBA → WASM), NDS emulator (in progress), and binary save
+            parser. Rust/WASM acceleration across 9 crates. 63 Vitest tests.
           </TypographyP>
           <ProjectsLinks live={this.live} repo={this.github} />
 
@@ -215,7 +238,8 @@ const projects: Project[] = [
           <TypographyH3 className="my-4 mt-8">Tech Stack</TypographyH3>
           <p className="font-mono mb-2">
             Next.js 16, React 19, TypeScript 5, Tailwind v4, Framer Motion,
-            TanStack Query, WebAssembly, IndexedDB, PokeAPI
+            TanStack Query v5, Rust (9 WASM crates), Recharts 3, IndexedDB,
+            PokeAPI v2, Vitest
           </p>
 
           <TypographyH3 className="my-4 mt-8">
@@ -366,6 +390,260 @@ const projects: Project[] = [
               View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
+        </div>
+      );
+    },
+  },
+  {
+    id: "auditfix",
+    category: "CLI Tool",
+    title: "Auditfix",
+    src: "/assets/projects-screenshots/auditfix/landing.svg",
+    screenshots: [],
+    skills: {
+      frontend: [],
+      backend: [
+        PROJECT_SKILLS.tsStable,
+        PROJECT_SKILLS.node,
+      ],
+    },
+    live: "",
+    github: "https://github.com/BFAlajid/auditfix",
+    get content() {
+      return (
+        <div>
+          <TypographyP className="font-mono">
+            Smarter npm dependency security CLI. Replaces npm audit with
+            production reachability analysis, risk scoring, supply chain
+            intelligence, and safe auto-fixes.
+          </TypographyP>
+          <ProjectsLinks live={this.live} repo={this.github} />
+
+          <TypographyH3 className="my-4 mt-8">Core Features</TypographyH3>
+          <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
+            <li>
+              Production reachability — only flags vulnerabilities in packages
+              your production code actually uses
+            </li>
+            <li>
+              Risk scoring (0-100) based on CVSS, EPSS exploit probability,
+              CISA KEV status, and fix availability
+            </li>
+            <li>
+              Supply chain protection — typosquatting detection, provenance
+              verification, behavioral analysis
+            </li>
+            <li>
+              VEX generation — OpenVEX v0.2.0 documents for machine-readable
+              vulnerability statuses
+            </li>
+            <li>
+              Safe auto-fix via lockfile overrides (npm, yarn, pnpm)
+            </li>
+            <li>
+              Monorepo support with per-workspace vulnerability mapping
+            </li>
+          </ul>
+
+          <TypographyH3 className="my-4 mt-8">Tech Stack</TypographyH3>
+          <p className="font-mono mb-2">
+            TypeScript, Node.js, OSV.dev API, EPSS API, CISA KEV
+          </p>
+
+          <Link
+            href="/projects/auditfix"
+            className="inline-block mt-6"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono"
+            >
+              View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+      );
+    },
+  },
+  {
+    id: "darwins-sandbox",
+    category: "Simulation",
+    title: "Darwin's Sandbox",
+    src: "/assets/projects-screenshots/darwins-sandbox/landing.svg",
+    screenshots: [],
+    skills: {
+      frontend: [
+        PROJECT_SKILLS.nextStable,
+        PROJECT_SKILLS.tsStable,
+        PROJECT_SKILLS.tailwindStable,
+        PROJECT_SKILLS.zustand,
+      ],
+      backend: [
+        PROJECT_SKILLS.rust,
+        PROJECT_SKILLS.wasm,
+      ],
+    },
+    live: "https://darwins-sandbox.vercel.app",
+    github: "https://github.com/BFAlajid/darwins-sandbox",
+    get content() {
+      return (
+        <div>
+          <TypographyP className="font-mono">
+            Real-time evolution simulator where creatures with neural network
+            brains compete for food, reproduce with mutations, and undergo
+            natural selection — all running in your browser.
+          </TypographyP>
+          <ProjectsLinks live={this.live} repo={this.github} />
+
+          <TypographyH3 className="my-4 mt-8">Core Features</TypographyH3>
+          <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
+            <li>
+              Closed energy budget — total world energy is conserved, naturally
+              creating carrying capacity
+            </li>
+            <li>
+              Momentum physics — creatures have inertia, drag, and limited turn
+              rates
+            </li>
+            <li>
+              Neural network brains — 12-input, 8-hidden, 3-output feedforward
+              networks
+            </li>
+            <li>
+              Canvas rendering with LOD system, species color batching, and
+              pan/zoom camera
+            </li>
+            <li>
+              Web Worker isolation — simulation never blocks the UI thread
+            </li>
+            <li>
+              Time-budgeted stepping — maintains 60fps regardless of simulation
+              speed
+            </li>
+          </ul>
+
+          <TypographyH3 className="my-4 mt-8">Tech Stack</TypographyH3>
+          <p className="font-mono mb-2">
+            Rust → WASM (189KB binary), Next.js 14, TypeScript, Tailwind CSS,
+            Zustand, HTML Canvas 2D
+          </p>
+
+          <Link
+            href="/projects/darwins-sandbox"
+            className="inline-block mt-6"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[var(--gold)]/30 hover:border-[var(--gold)] hover:text-[var(--gold)] font-mono"
+            >
+              View Case Study <ArrowUpRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+      );
+    },
+  },
+  {
+    id: "playwright-archaeologist",
+    category: "Developer Tool",
+    title: "Playwright Archaeologist",
+    src: "/assets/projects-screenshots/playwright-archaeologist/landing.svg",
+    screenshots: [],
+    skills: {
+      frontend: [],
+      backend: [
+        PROJECT_SKILLS.tsStable,
+        PROJECT_SKILLS.playwright,
+        PROJECT_SKILLS.node,
+      ],
+    },
+    live: "",
+    github: "https://github.com/BFAlajid/playwright-archaeologist",
+    get content() {
+      return (
+        <div>
+          <TypographyP className="font-mono">
+            Automated test archaeology tool that crawls web applications,
+            discovers routes, maps selectors, and generates Playwright E2E test
+            specs.
+          </TypographyP>
+          <ProjectsLinks live={this.live} repo={this.github} />
+
+          <TypographyH3 className="my-4 mt-8">Core Features</TypographyH3>
+          <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
+            <li>
+              Automated route discovery — crawls applications to map all
+              navigable paths
+            </li>
+            <li>
+              Selector mapping — identifies and catalogs testable UI elements
+            </li>
+            <li>
+              E2E spec generation — produces ready-to-run Playwright test files
+            </li>
+            <li>
+              Configurable crawl depth and scope filtering
+            </li>
+          </ul>
+
+          <TypographyH3 className="my-4 mt-8">Tech Stack</TypographyH3>
+          <p className="font-mono mb-2">
+            TypeScript, Playwright, Node.js
+          </p>
+        </div>
+      );
+    },
+  },
+  {
+    id: "dev-savestate",
+    category: "Developer Tool",
+    title: "Dev-Savestate",
+    src: "/assets/projects-screenshots/dev-savestate/landing.svg",
+    screenshots: [],
+    skills: {
+      frontend: [],
+      backend: [
+        PROJECT_SKILLS.tsStable,
+        PROJECT_SKILLS.node,
+      ],
+    },
+    live: "",
+    github: "https://github.com/BFAlajid/dev-savestate",
+    get content() {
+      return (
+        <div>
+          <TypographyP className="font-mono">
+            Snapshot and restore your entire dev environment — git state,
+            running processes, env variables, and editor context — with named
+            save slots and instant switching.
+          </TypographyP>
+          <ProjectsLinks live={this.live} repo={this.github} />
+
+          <TypographyH3 className="my-4 mt-8">Core Features</TypographyH3>
+          <ul className="font-mono text-sm space-y-2 text-muted-foreground list-disc list-inside">
+            <li>
+              Named save slots — snapshot your full working context with a
+              single command
+            </li>
+            <li>
+              Git-aware — captures branch, stash, uncommitted changes, and
+              staged files
+            </li>
+            <li>
+              Process management — saves and restores running dev servers and
+              background tasks
+            </li>
+            <li>
+              Instant restore — switch between project contexts in seconds
+            </li>
+          </ul>
+
+          <TypographyH3 className="my-4 mt-8">Tech Stack</TypographyH3>
+          <p className="font-mono mb-2">
+            TypeScript, Node.js
+          </p>
         </div>
       );
     },
