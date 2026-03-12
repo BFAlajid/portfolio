@@ -52,6 +52,7 @@ const archivoBlack = Archivo_Black({
   weight: "400",
   variable: "--font-display",
   display: "swap",
+  adjustFontFallback: true,
 });
 
 export default function RootLayout({
