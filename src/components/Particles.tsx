@@ -51,6 +51,7 @@ export default function Particles({
 
     return () => {
       window.removeEventListener("resize", initCanvas);
+      cancelAnimationFrame(animationFrameId.current);
     };
   }, [isBlogPost]);
 
@@ -181,24 +182,26 @@ export default function Particles({
   };
 
   const lastFrameTime = useRef(0);
-  const frameInterval = isMobileRef.current ? 33 : 0; // ~30fps on mobile, uncapped on desktop
+  const animationFrameId = useRef<number>(-1);
+  const frameInterval = 33; // ~30fps for all devices — particles are background decoration
 
   const animate = () => {
     const now = performance.now();
-    if (frameInterval && now - lastFrameTime.current < frameInterval) {
-      window.requestAnimationFrame(animate);
+    if (now - lastFrameTime.current < frameInterval) {
+      animationFrameId.current = window.requestAnimationFrame(animate);
       return;
     }
     lastFrameTime.current = now;
 
     clearContext();
-    circles.current.forEach((circle: Circle, i: number) => {
+    for (let i = circles.current.length - 1; i >= 0; i--) {
+      const circle: Circle = circles.current[i];
       // Handle the alpha value
       const edge = [
-        circle.x + circle.translateX - circle.size, // distance from left edge
-        canvasSize.current.w - circle.x - circle.translateX - circle.size, // distance from right edge
-        circle.y + circle.translateY - circle.size, // distance from top edge
-        canvasSize.current.h - circle.y - circle.translateY - circle.size, // distance from bottom edge
+        circle.x + circle.translateX - circle.size,
+        canvasSize.current.w - circle.x - circle.translateX - circle.size,
+        circle.y + circle.translateY - circle.size,
+        canvasSize.current.h - circle.y - circle.translateY - circle.size,
       ];
       const closestEdge = edge.reduce((a, b) => Math.min(a, b));
       const remapClosestEdge = parseFloat(
@@ -229,12 +232,9 @@ export default function Particles({
         circle.y < -circle.size ||
         circle.y > canvasSize.current.h + circle.size
       ) {
-        // remove the circle from the array
         circles.current.splice(i, 1);
-        // create a new circle
         const newCircle = circleParams();
         drawCircle(newCircle);
-        // update the circle position
       } else {
         drawCircle(
           {
@@ -248,8 +248,8 @@ export default function Particles({
           true
         );
       }
-    });
-    window.requestAnimationFrame(animate);
+    }
+    animationFrameId.current = window.requestAnimationFrame(animate);
   };
 
   if (isBlogPost) return null;

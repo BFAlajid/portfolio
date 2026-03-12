@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -70,7 +72,6 @@ const HeroSection = () => {
         >
           <div className="flex flex-col">
               <div>
-                <BlurIn delay={0.2}>
                   <h1
                     className={cn(
                       "-ml-[6px] leading-none font-thin text-transparent text-slate-800 text-left",
@@ -84,7 +85,6 @@ const HeroSection = () => {
                     <br className="md:block hidden" />{" "}
                     {config.author.split(" ")[2]}
                   </h1>
-                </BlurIn>
 
                 <BlurIn delay={0.4}>
                   <p
@@ -133,17 +133,13 @@ const HeroSection = () => {
                       years shipping production code
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 min-w-[120px]">
-                    {repoCount !== null && (
-                      <>
-                        <span className="text-[var(--gold)] font-bold text-lg">
-                          {repoCount}
-                        </span>
-                        <span className="text-slate-500 dark:text-zinc-500">
-                          public repos
-                        </span>
-                      </>
-                    )}
+                  <div className={cn("flex items-center gap-2 min-w-[120px] transition-opacity duration-300", repoCount !== null ? "opacity-100" : "opacity-0")}>
+                    <span className="text-[var(--gold)] font-bold text-lg">
+                      {repoCount ?? 0}
+                    </span>
+                    <span className="text-slate-500 dark:text-zinc-500">
+                      public repos
+                    </span>
                   </div>
                 </div>
               </BlurIn>
