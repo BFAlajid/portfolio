@@ -64,6 +64,7 @@ export default function RootLayout({
     <html lang="en" className={[inter.variable, archivoBlack.variable, "dark", "font-display"].join(" ")} suppressHydrationWarning>
       <head>
         {/* If you are reading this, I probably want to work with you. basilfrancis.alajid@yahoo.com */}
+        <link rel="dns-prefetch" href="https://api.github.com" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -106,7 +107,12 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: `
           window.addEventListener('error', function(e) {
             if (e.message && (e.message.includes('ChunkLoadError') || e.message.includes('Loading chunk'))) {
-              window.location.reload();
+              var key = '__chunk_reload_count';
+              var count = parseInt(sessionStorage.getItem(key) || '0', 10);
+              if (count < 3) {
+                sessionStorage.setItem(key, String(count + 1));
+                window.location.reload();
+              }
             }
           });
         `}} />

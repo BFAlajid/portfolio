@@ -60,7 +60,7 @@ const HeroSection = () => {
   };
 
   return (
-    <SectionWrapper id="hero" className={cn("relative w-full h-screen")}>
+    <SectionWrapper id="hero" noFade className={cn("relative w-full h-screen")}>
       <div className="grid md:grid-cols-2">
         <div
           className={cn(
