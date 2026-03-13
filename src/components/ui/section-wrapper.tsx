@@ -6,9 +6,11 @@ import { cn } from "@/lib/utils";
 
 interface SectionWrapperProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
+  /** Skip the fade-in animation (e.g. for hero — avoids CLS from opacity:0 on first paint) */
+  noFade?: boolean;
 }
 
-const SectionWrapper = ({ id, className, children, ...props }: SectionWrapperProps) => {
+const SectionWrapperFade = ({ id, className, children, ...props }: Omit<SectionWrapperProps, "noFade">) => {
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -25,13 +27,24 @@ const SectionWrapper = ({ id, className, children, ...props }: SectionWrapperPro
       {...props}
     >
       <motion.div
-        style={{ opacity, willChange: "opacity" }}
+        style={{ opacity }}
         className="w-full h-full"
       >
         {children}
       </motion.div>
     </section>
   );
+};
+
+const SectionWrapper = ({ noFade, id, className, children, ...props }: SectionWrapperProps) => {
+  if (noFade) {
+    return (
+      <section id={id} className={cn("relative", className)} {...props}>
+        <div className="w-full h-full">{children}</div>
+      </section>
+    );
+  }
+  return <SectionWrapperFade id={id} className={className} {...props}>{children}</SectionWrapperFade>;
 };
 
 export default SectionWrapper;

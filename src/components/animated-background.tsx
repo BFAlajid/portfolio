@@ -371,12 +371,12 @@ const AnimatedBackground = () => {
     };
   }, [activeSection, splineApp]);
 
-  // Fallback: bypass preloader if Spline takes too long on mobile
+  // Fallback: bypass preloader if Spline takes too long
   useEffect(() => {
-    if (!isMobile || !isLoading) return;
+    if (!isLoading) return;
     const timeout = setTimeout(() => {
       if (isLoading) bypassLoading();
-    }, 3000);
+    }, isMobile ? 3000 : 5000);
     return () => clearTimeout(timeout);
   }, [isMobile, isLoading]);
 
