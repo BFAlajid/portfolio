@@ -8,11 +8,13 @@ import { cn } from "@/lib/utils";
 import { useToast } from "./ui/use-toast";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { track } from "@vercel/analytics";
 
 const ContactForm = () => {
   const [fullName, setFullName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
+  const [company, setCompany] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
   const { toast } = useToast();
@@ -31,10 +33,12 @@ const ContactForm = () => {
           fullName,
           email,
           message,
+          company,
         }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
+      track("contact_form_submission");
       toast({
         title: "Thank you!",
         description: "I'll get back to you as soon as possible.",
@@ -86,6 +90,22 @@ const ContactForm = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </LabelInputContainer>
+      </div>
+      {/* Honeypot field - invisible to real users */}
+      <div
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", top: "-9999px" }}
+      >
+        <label htmlFor="company">Company</label>
+        <input
+          type="text"
+          id="company"
+          name="company"
+          tabIndex={-1}
+          autoComplete="off"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+        />
       </div>
       <div className="grid w-full gap-1.5 mb-4">
         <Label htmlFor="content">Your Message</Label>

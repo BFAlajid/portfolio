@@ -19,6 +19,9 @@ const EngineeringDepthSection = dynamic(() => import("@/components/sections/engi
 const ExperienceSection = dynamic(() => import("@/components/sections/experience"), {
   loading: () => <div className="min-h-[120vh]" />,
 });
+const TestimonialsSection = dynamic(() => import("@/components/sections/testimonials"), {
+  loading: () => <div className="py-20" />,
+});
 const ProjectsSection = dynamic(() => import("@/components/sections/projects"));
 const CertificationsSection = dynamic(() => import("@/components/sections/certifications"), {
   loading: () => <div className="min-h-[60vh]" />,
@@ -59,6 +62,7 @@ function MainPage() {
         <SkillsSection />
         <TechTimelineSection />
         <ExperienceSection />
+        <TestimonialsSection />
         <ProjectsSection />
         <CertificationsSection />
         <BlogPreviewSection />

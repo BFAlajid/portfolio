@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getBlogPosts } from "@/lib/mdx";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, User } from "lucide-react";
+import { CalendarDays, Clock, User } from "lucide-react";
 import RevealAnimation from "@/components/reveal-animations";
 import PageTransition from "@/components/page-transition";
 
@@ -58,9 +58,15 @@ export default function BlogPage() {
                   {/* Optional: Add image here if available */}
                 </CardContent>
                 <CardFooter className="mt-auto">
-                  <div className="flex items-center gap-2 text-sm text-zinc-500">
-                    <User className="w-4 h-4" />
-                    {post.metadata.author}
+                  <div className="flex items-center justify-between w-full text-sm text-zinc-500">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      {post.metadata.author}
+                    </div>
+                    <span className="font-mono text-xs text-zinc-600 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {post.metadata.readingTime}
+                    </span>
                   </div>
                 </CardFooter>
               </Card>

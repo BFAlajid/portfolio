@@ -18,11 +18,13 @@ import {
   FileText,
 } from "lucide-react";
 import { config } from "@/data/config";
+import { blogEntries, projectEntries } from "@/data/search-entries";
 
 type PaletteItem = {
   id: string;
   label: string;
   group: string;
+  keywords?: string[];
   icon: React.ReactNode;
   action: () => void;
 };
@@ -56,7 +58,7 @@ export default function CommandPalette() {
     window.open(url, "_blank");
   }, []);
 
-  const items: PaletteItem[] = [
+  const navigationItems: PaletteItem[] = [
     { id: "home", label: "Home", group: "Navigation", icon: <Home className="w-4 h-4" />, action: () => scrollTo("#hero") },
     { id: "about", label: "About", group: "Navigation", icon: <User className="w-4 h-4" />, action: () => scrollTo("#about") },
     { id: "skills", label: "Skills", group: "Navigation", icon: <Zap className="w-4 h-4" />, action: () => scrollTo("#skills") },
@@ -64,19 +66,49 @@ export default function CommandPalette() {
     { id: "certifications", label: "Certifications", group: "Navigation", icon: <Award className="w-4 h-4" />, action: () => scrollTo("#certifications") },
     { id: "projects", label: "Projects", group: "Navigation", icon: <FolderOpen className="w-4 h-4" />, action: () => scrollTo("#projects") },
     { id: "contact", label: "Contact", group: "Navigation", icon: <Mail className="w-4 h-4" />, action: () => scrollTo("#contact") },
-    { id: "blog-gen3", label: "How I Built a Gen 3 Save Parser", group: "Blog", icon: <BookOpen className="w-4 h-4" />, action: () => navigate("/blogs/gen3-save-parser") },
-    { id: "blog-wasm", label: "Running a GBA Emulator with WebAssembly", group: "Blog", icon: <BookOpen className="w-4 h-4" />, action: () => navigate("/blogs/webassembly-nextjs") },
-    { id: "blog-battle", label: "Building a Battle Engine with useReducer", group: "Blog", icon: <BookOpen className="w-4 h-4" />, action: () => navigate("/blogs/battle-engine-state-machine") },
-    { id: "all-blogs", label: "All Blog Posts", group: "Blog", icon: <BookOpen className="w-4 h-4" />, action: () => navigate("/blogs") },
+  ];
+
+  const blogItems: PaletteItem[] = blogEntries.map((blog) => ({
+    id: `blog-${blog.slug}`,
+    label: blog.title,
+    group: "Blog Posts",
+    keywords: blog.tags,
+    icon: <BookOpen className="w-4 h-4" />,
+    action: () => navigate(`/blogs/${blog.slug}`),
+  }));
+
+  const projectItems: PaletteItem[] = projectEntries.map((project) => ({
+    id: `project-${project.id}`,
+    label: project.title,
+    group: "Projects",
+    keywords: [project.category.toLowerCase()],
+    icon: <FolderOpen className="w-4 h-4" />,
+    action: () => navigate(`/projects/${project.id}`),
+  }));
+
+  const linkItems: PaletteItem[] = [
+    { id: "all-blogs", label: "All Blog Posts", group: "Links", icon: <BookOpen className="w-4 h-4" />, action: () => navigate("/blogs") },
     { id: "github", label: "GitHub", group: "Links", icon: <Github className="w-4 h-4" />, action: () => openExternal(config.social.github) },
     { id: "linkedin", label: "LinkedIn", group: "Links", icon: <Linkedin className="w-4 h-4" />, action: () => openExternal(config.social.linkedin) },
     { id: "resume", label: "Resume (PDF)", group: "Links", icon: <FileText className="w-4 h-4" />, action: () => openExternal("/assets/Basil_Francis_Alajid_Resume.pdf") },
   ];
 
+  const items: PaletteItem[] = [
+    ...navigationItems,
+    ...projectItems,
+    ...blogItems,
+    ...linkItems,
+  ];
+
   const filtered = query
-    ? items.filter((item) =>
-        item.label.toLowerCase().includes(query.toLowerCase())
-      )
+    ? items.filter((item) => {
+        const q = query.toLowerCase();
+        return (
+          item.label.toLowerCase().includes(q) ||
+          item.group.toLowerCase().includes(q) ||
+          (item.keywords?.some((kw) => kw.toLowerCase().includes(q)) ?? false)
+        );
+      })
     : items;
 
   // Group items

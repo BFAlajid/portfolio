@@ -107,7 +107,10 @@ function buildHelpOutput(): Line[] {
     ["contact", "How to reach me"],
     ["projects", "Scroll to projects section"],
     ["resume", "Open resume in new tab"],
-    ["clear", "Clear terminal"],
+    ["ls", "List directory contents"],
+    ["pwd", "Print working directory"],
+    ["date", "Show current date and time"],
+    ["clear", "Clear terminal (also Ctrl+L)"],
     ["help", "Show this message"],
   ];
 
@@ -240,7 +243,7 @@ function processCommand(raw: string): { lines: Line[]; action?: string } {
         lines: [
           {
             type: "error",
-            content: `  command not found: ${cmd}. Type 'help' for available commands.`,
+            content: `  Command not found: ${cmd}. Type 'help' to see available commands.`,
           },
         ],
       };
@@ -300,6 +303,7 @@ function ColorBar() {
   );
 }
 
+const MAX_HISTORY = 20;
 const INTRO_COMMANDS = ["neofetch"];
 
 const InteractiveTerminalSection = () => {
@@ -426,7 +430,7 @@ const InteractiveTerminalSection = () => {
         const { lines: outputLines } = processCommand(cmd);
 
         setLines((prev) => [...prev, inputLine, ...outputLines]);
-        setHistory((prev) => [cmd, ...prev]);
+        setHistory((prev) => [cmd, ...prev].slice(0, MAX_HISTORY));
         setInput("");
 
         await new Promise((r) => setTimeout(r, 400));
@@ -470,7 +474,7 @@ const InteractiveTerminalSection = () => {
       setLines((prev) => [...prev, inputLine, ...outputLines]);
 
       if (cmd.trim()) {
-        setHistory((prev) => [cmd, ...prev]);
+        setHistory((prev) => [cmd, ...prev].slice(0, MAX_HISTORY));
         setHistoryIdx(-1);
       }
 

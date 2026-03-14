@@ -2,6 +2,8 @@ export type CaseStudy = {
   projectId: string;
   title: string;
   category: string;
+  date: string;
+  teamSize: string;
   src: string;
   techStack: string[];
   overview: string;
@@ -19,6 +21,8 @@ const caseStudies: CaseStudy[] = [
     projectId: "government-case-management",
     title: "Government Defense Case Management Platform",
     category: "Enterprise Workflow System",
+    date: "2024-Present",
+    teamSize: "8-person cross-functional team",
     src: "/assets/projects-screenshots/case-management/landing.svg",
     techStack: [
       "React",
@@ -109,6 +113,8 @@ const caseStudies: CaseStudy[] = [
     projectId: "professor-basils-lab",
     title: "Professor Basil's Lab",
     category: "Full-Stack Web App",
+    date: "2025-2026",
+    teamSize: "Solo project",
     src: "/assets/projects-screenshots/professor-basils-lab/landing.svg",
     techStack: [
       "Next.js 16",
@@ -179,6 +185,8 @@ const caseStudies: CaseStudy[] = [
     projectId: "manila-watch-atelier",
     title: "Manila Watch Atelier",
     category: "E-Commerce",
+    date: "2025",
+    teamSize: "Solo project",
     src: "/assets/projects-screenshots/manila-watch-atelier/landing.svg",
     techStack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
     overview:
@@ -228,6 +236,8 @@ const caseStudies: CaseStudy[] = [
     projectId: "auditfix",
     title: "Auditfix",
     category: "CLI Tool",
+    date: "2025",
+    teamSize: "Solo project",
     src: "/assets/projects-screenshots/auditfix/landing.svg",
     techStack: [
       "TypeScript",
@@ -289,6 +299,8 @@ const caseStudies: CaseStudy[] = [
     projectId: "darwins-sandbox",
     title: "Darwin's Sandbox",
     category: "Simulation",
+    date: "2025-2026",
+    teamSize: "Solo project",
     src: "/assets/projects-screenshots/darwins-sandbox/landing.svg",
     techStack: [
       "Rust",

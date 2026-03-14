@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Star, GitFork, GitCommit, Code2 } from "lucide-react";
 import SectionWrapper from "../ui/section-wrapper";
 import { config } from "@/data/config";
 import { getRelativeTime } from "@/lib/utils";
@@ -109,6 +110,224 @@ function GitHubActivity() {
   );
 }
 
+// --- Engineering Stats (aggregate across all tracked repos) ---
+
+const TRACKED_REPOS = [
+  "BFAlajid/professor-basils-lab",
+  "BFAlajid/manila-watch-atelier-MVP",
+  "BFAlajid/auditfix",
+  "BFAlajid/darwins-sandbox",
+  "BFAlajid/playwright-archaeologist",
+  "BFAlajid/dev-savestate",
+];
+
+const STATS_CACHE_KEY = "gh-eng-stats";
+
+type RepoStats = {
+  totalCommits: number;
+  stars: number;
+  forks: number;
+  languages: Record<string, number>;
+};
+
+type AggregateStats = {
+  totalStars: number;
+  totalForks: number;
+  totalCommits: number;
+  languages: Record<string, number>;
+};
+
+function getLanguageColor(lang: string): string {
+  const colors: Record<string, string> = {
+    TypeScript: "#3178c6",
+    JavaScript: "#f1e05a",
+    CSS: "#563d7c",
+    HTML: "#e34c26",
+    Python: "#3572A5",
+    Rust: "#dea584",
+    SCSS: "#c6538c",
+    Shell: "#89e051",
+  };
+  return colors[lang] || "#C9A84C";
+}
+
+function EngineeringStats() {
+  const [stats, setStats] = useState<AggregateStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    async function fetchAll() {
+      try {
+        // Check localStorage cache
+        const cached = localStorage.getItem(STATS_CACHE_KEY);
+        if (cached) {
+          const { data, ts } = JSON.parse(cached);
+          if (Date.now() - ts < config.cacheTTL) {
+            setStats(data);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch { /* ignore parse errors */ }
+
+      try {
+        const results = await Promise.allSettled(
+          TRACKED_REPOS.map((repo) =>
+            fetch(`/api/github-stats?repo=${encodeURIComponent(repo)}`)
+              .then((res) => {
+                if (!res.ok) throw new Error("Failed");
+                return res.json() as Promise<RepoStats>;
+              })
+          )
+        );
+
+        const aggregate: AggregateStats = {
+          totalStars: 0,
+          totalForks: 0,
+          totalCommits: 0,
+          languages: {},
+        };
+
+        let fulfilled = 0;
+        for (const result of results) {
+          if (result.status === "fulfilled") {
+            fulfilled++;
+            const d = result.value;
+            aggregate.totalStars += d.stars ?? 0;
+            aggregate.totalForks += d.forks ?? 0;
+            aggregate.totalCommits += d.totalCommits ?? 0;
+            if (d.languages) {
+              for (const [lang, bytes] of Object.entries(d.languages)) {
+                aggregate.languages[lang] =
+                  (aggregate.languages[lang] ?? 0) + bytes;
+              }
+            }
+          }
+        }
+
+        if (fulfilled === 0) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+
+        setStats(aggregate);
+        try {
+          localStorage.setItem(
+            STATS_CACHE_KEY,
+            JSON.stringify({ data: aggregate, ts: Date.now() })
+          );
+        } catch { /* quota exceeded — ignore */ }
+      } catch {
+        setError(true);
+      }
+      setLoading(false);
+    }
+
+    fetchAll();
+  }, []);
+
+  // Error: render nothing
+  if (error) return null;
+
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="mt-6 p-4 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] animate-pulse">
+        <div className="h-3 w-28 bg-[#2A2A2A] rounded mb-4" />
+        <div className="flex gap-6 mb-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-4 w-4 bg-[#2A2A2A] rounded" />
+              <div className="h-4 w-8 bg-[#2A2A2A] rounded" />
+            </div>
+          ))}
+        </div>
+        <div className="h-2 w-full bg-[#2A2A2A] rounded-full" />
+      </div>
+    );
+  }
+
+  if (!stats) return null;
+
+  // Top 5 languages by bytes
+  const sortedLangs = Object.entries(stats.languages)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5);
+  const totalBytes = sortedLangs.reduce((sum, [, b]) => sum + b, 0);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      viewport={{ once: true }}
+      className="mt-6 p-4 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A]"
+    >
+      <p className="text-xs font-mono text-[#A0A0A0] mb-3 tracking-wide">
+        Engineering Stats — {TRACKED_REPOS.length} Repos
+      </p>
+
+      {/* Stat numbers */}
+      <div className="flex flex-wrap gap-x-6 gap-y-2 mb-4">
+        <span className="flex items-center gap-1.5 text-sm font-mono">
+          <Star className="w-3.5 h-3.5 text-[var(--gold)]" />
+          <span className="text-foreground font-bold">{stats.totalStars}</span>
+          <span className="text-[#A0A0A0] text-xs">stars</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-sm font-mono">
+          <GitFork className="w-3.5 h-3.5 text-[var(--gold)]" />
+          <span className="text-foreground font-bold">{stats.totalForks}</span>
+          <span className="text-[#A0A0A0] text-xs">forks</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-sm font-mono">
+          <GitCommit className="w-3.5 h-3.5 text-[var(--gold)]" />
+          <span className="text-foreground font-bold">{stats.totalCommits}</span>
+          <span className="text-[#A0A0A0] text-xs">recent commits</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-sm font-mono">
+          <Code2 className="w-3.5 h-3.5 text-[var(--gold)]" />
+          <span className="text-foreground font-bold">{sortedLangs.length}</span>
+          <span className="text-[#A0A0A0] text-xs">languages</span>
+        </span>
+      </div>
+
+      {/* Language bar */}
+      {totalBytes > 0 && (
+        <>
+          <div className="flex rounded-full overflow-hidden h-2 bg-[#2A2A2A]">
+            {sortedLangs.map(([lang, bytes]) => (
+              <div
+                key={lang}
+                style={{
+                  width: `${(bytes / totalBytes) * 100}%`,
+                  backgroundColor: getLanguageColor(lang),
+                }}
+                title={`${lang}: ${((bytes / totalBytes) * 100).toFixed(1)}%`}
+              />
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-3 mt-2">
+            {sortedLangs.map(([lang, bytes]) => (
+              <span
+                key={lang}
+                className="text-xs font-mono text-[#A0A0A0] flex items-center gap-1"
+              >
+                <span
+                  className="w-2 h-2 rounded-full inline-block"
+                  style={{ backgroundColor: getLanguageColor(lang) }}
+                />
+                {lang} {((bytes / totalBytes) * 100).toFixed(1)}%
+              </span>
+            ))}
+          </div>
+        </>
+      )}
+    </motion.div>
+  );
+}
+
 const AboutSection = () => {
   return (
     <SectionWrapper className="flex flex-col items-center justify-center min-h-[60vh] py-20 z-10">
@@ -142,6 +361,16 @@ const AboutSection = () => {
 
         <motion.div
           custom={3}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={fadeInUp}
+        >
+          <EngineeringStats />
+        </motion.div>
+
+        <motion.div
+          custom={4}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}

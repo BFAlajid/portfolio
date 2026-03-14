@@ -16,6 +16,7 @@ import ScrollDownIcon from "../scroll-down-icon";
 import { SiGithub, SiLinkedin } from "react-icons/si";
 import { config } from "@/data/config";
 import { motion } from "framer-motion";
+import { track } from "@vercel/analytics";
 
 import SectionWrapper from "../ui/section-wrapper";
 
@@ -57,6 +58,7 @@ const HeroSection = () => {
     const next = current + 1;
     localStorage.setItem(STORAGE_KEY, String(next));
     setDownloadCount(next);
+    track("resume_download");
   };
 
   return (

@@ -2,8 +2,9 @@ import caseStudies, { getCaseStudy, getAllCaseStudyIds } from "@/data/case-studi
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Users } from "lucide-react";
 import PageTransition from "@/components/page-transition";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 export async function generateStaticParams() {
   return getAllCaseStudyIds().map((id) => ({ id }));
@@ -31,14 +32,14 @@ export default function CaseStudyPage({ params }: { params: { id: string } }) {
     <PageTransition>
     <main className="min-h-screen bg-background text-foreground">
       <div className="max-w-4xl mx-auto px-6 py-20">
-        {/* Back link */}
-        <Link
-          href="/#projects"
-          className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-[var(--gold)] transition-colors mb-10"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Projects
-        </Link>
+        {/* Breadcrumb */}
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Projects", href: "/#projects" },
+            { label: study.title, href: `/projects/${params.id}` },
+          ]}
+        />
 
         {/* Hero */}
         <div className="mb-12">
@@ -56,6 +57,16 @@ export default function CaseStudyPage({ params }: { params: { id: string } }) {
           <h1 className="text-4xl md:text-5xl font-display mt-2 mb-4">
             {study.title}
           </h1>
+          <div className="flex items-center gap-4 mb-4">
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded bg-[var(--gold)]/10 border border-[var(--gold)]/20 text-[var(--gold)]">
+              <CalendarDays className="w-3 h-3" />
+              {study.date}
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded bg-[var(--gold)]/10 border border-[var(--gold)]/20 text-[var(--gold)]">
+              <Users className="w-3 h-3" />
+              {study.teamSize}
+            </span>
+          </div>
           <div className="flex flex-wrap gap-2">
             {study.techStack.map((tech) => (
               <span

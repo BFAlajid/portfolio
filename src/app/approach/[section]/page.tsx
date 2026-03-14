@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import PageTransition from "@/components/page-transition";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 export async function generateStaticParams() {
   return getAllApproachSectionIds().map((section) => ({ section }));
@@ -30,13 +31,13 @@ export default function ApproachSectionPage({ params }: { params: { section: str
     <PageTransition>
       <main className="min-h-screen bg-background text-foreground">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <Link
-            href="/approach"
-            className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-[var(--gold)] transition-colors mb-10"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            All Topics
-          </Link>
+          <Breadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Approach", href: "/approach" },
+              { label: section.title, href: `/approach/${params.section}` },
+            ]}
+          />
 
           <div className="mb-12">
             <span className="text-xs font-mono text-[var(--gold)] tracking-widest uppercase">

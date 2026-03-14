@@ -64,6 +64,7 @@ export default function RootLayout({
     <html lang="en" className={[inter.variable, archivoBlack.variable, "dark", "font-display"].join(" ")} suppressHydrationWarning>
       <head>
         {/* If you are reading this, I probably want to work with you. basilfrancis.alajid@yahoo.com */}
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/feed.xml" />
         <link rel="dns-prefetch" href="https://api.github.com" />
         <script
           type="application/ld+json"
